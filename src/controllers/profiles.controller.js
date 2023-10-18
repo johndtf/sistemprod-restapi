@@ -38,11 +38,11 @@ export const createProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const { profile } = req.body;
+    const { perfil } = req.body;
 
     const [result] = await pool.query(
       "UPDATE perfiles SET perfil = IFNULL(?, perfil) WHERE id_perfil = ?",
-      [profile, id]
+      [perfil, id]
       /* IFNULL se usa junto con la petición PATCH, si no le pasa valor lo deja como estaba */
     );
 
