@@ -1,5 +1,7 @@
 import { pool } from "../db.js";
 
+//----------Listado de Perfil---------------------------------
+
 export const getProfiles = async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM perfiles");
@@ -9,6 +11,7 @@ export const getProfiles = async (req, res) => {
   }
 };
 
+//---------------Buscar Perfil por id -----------------------
 export const getProfile = async (req, res) => {
   try {
     const [rows] = await pool.query(
@@ -23,18 +26,34 @@ export const getProfile = async (req, res) => {
   }
 };
 
+//-----------------Crear Perfil ---------------------------------
 export const createProfile = async (req, res) => {
   try {
     const { perfil } = req.body;
+
+    // Verificar si el perfil ya existe
+    const [existingProfiles] = await pool.query(
+      "SELECT id_perfil FROM perfiles WHERE perfil = ?",
+      [perfil]
+    );
+
+    if (existingProfiles.length > 0) {
+      // El perfil ya existe, responder con un mensaje de error
+      return res.status(400).json({ message: "El perfil ya existe" });
+    }
+
+    // El perfil no existe, proceder a la inserción
     const [rows] = await pool.query("INSERT INTO perfiles(perfil) VALUES (?)", [
       perfil,
     ]);
+
     res.send({ id: rows.insertId, perfil });
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
 
+//------------------Actualizar Perfil ----------------------------
 export const updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
@@ -62,6 +81,7 @@ export const updateProfile = async (req, res) => {
   }
 };
 
+//--------------------Borrar Perfil ----------------------------------
 export const deleteProfile = async (req, res) => {
   try {
     const [result] = await pool.query(

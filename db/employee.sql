@@ -1,0 +1,26 @@
+-- -----------------------------------------------------
+-- Table `empleados`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `empleados` (
+  `id_empleado` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `cedula` INT UNSIGNED NOT NULL,
+  `nombre` VARCHAR(45) NOT NULL,
+  `apellido` VARCHAR(45) NOT NULL,
+  `telefono` VARCHAR(10) NOT NULL,  
+  `direccion` VARCHAR(100) NOT NULL,
+  `email` VARCHAR(100) NULL,
+  `id_perfil` TINYINT UNSIGNED NOT NULL,
+  `usuario` VARCHAR(30) NOT NULL,
+  `contrasenia` VARCHAR(20) NULL,
+  `estado` VARCHAR(1) NOT NULL,
+  PRIMARY KEY (`id_empleado`),
+  UNIQUE INDEX `id_empleado_UNIQUE` (`id_empleado` ASC) VISIBLE,
+  UNIQUE INDEX `cedula_UNIQUE` (`cedula` ASC) VISIBLE,
+  UNIQUE INDEX `usuario_UNIQUE` (`usuario` ASC) VISIBLE,
+  INDEX `id_perfil` (`id_perfil` ASC) INVISIBLE,
+  CONSTRAINT `id_perfil`
+    FOREIGN KEY (`id_perfil`)
+    REFERENCES `perfiles` (`id_perfil`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
