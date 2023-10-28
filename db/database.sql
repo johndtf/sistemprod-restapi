@@ -185,6 +185,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bdreencauche`.`resoluciones_i` (
   `id_inspec` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `codigo` VARCHAR(2),
   `resol_inspec` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id_inspec`),
   UNIQUE INDEX `id_inspec_UNIQUE` (`id_inspec` ASC) VISIBLE)
@@ -288,6 +289,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `bdreencauche`.`resoluciones_g` (
   `id_resol_g` SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `codigo` VARCHAR(2),  
   `resol_garan` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`id_resol_g`),
   UNIQUE INDEX `id_resol_g_UNIQUE` (`id_resol_g` ASC) VISIBLE)

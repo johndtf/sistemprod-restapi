@@ -4,7 +4,7 @@ import {
   getResolutionInsp,
   createResolutionInsp,
   updateResolutionInsp,
-  deleteResolutionInsp,
+  /*  deleteResolutionInsp, */
 } from "../controllers/resolutionsInsp.controller.js";
 
 const router = Router();
@@ -14,6 +14,6 @@ router.get("/resolutionsInsp/:id", getResolutionInsp);
 router.post("/resolutionsInsp", createResolutionInsp);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
 router.patch("/resolutionsInsp/:id", updateResolutionInsp);
-router.delete("/resolutionsInsp/:id", deleteResolutionInsp);
+//router.delete("/resolutionsInsp/:id", deleteResolutionInsp);
 
 export default router;

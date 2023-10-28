@@ -55,21 +55,43 @@ export const createDimension = async (req, res) => {
 };
 
 //------------------Actualizar Dimensión ----------------------------
+
 export const updateDimension = async (req, res) => {
   try {
     const { id } = req.params;
     const { dimension } = req.body;
 
+    //Verificar si el id de la dimensión existe
+    const [existingDimensionId] = await pool.query(
+      "SELECT * FROM dimensiones WHERE id_dimension = ?",
+      [id]
+    );
+
+    if (existingDimensionId.length === 0) {
+      // La dimensión a actualizar no existe, responder con un mensaje de error
+      return res.status(404).json({ message: "Dimensión no encontrada" });
+    }
+
+    //Verificar que la dimensión modficada no exista en la tabla
+    const [existingDimensionName] = await pool.query(
+      "SELECT id_dimension FROM dimensiones WHERE dimension = ? AND id_dimension != ?",
+      [dimension, id]
+    );
+    //Si la dimensión modificada está siendo usada por otro registro genera mensaje de error
+    if (existingDimensionName.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "Este nombre ya está asociado a otra dimensión" });
+    }
+
+    //Realiza la actualización en la tabla dimensiones
     const [result] = await pool.query(
       "UPDATE dimensiones SET dimension = IFNULL(?, dimension) WHERE id_dimension = ?",
       [dimension, id]
       /* IFNULL se usa junto con la petición PATCH, si no le pasa valor lo deja como estaba */
     );
 
-    console.log(result);
-
-    if (result.affectedRows <= 0)
-      return res.status(404).json({ message: "Dimension not found" });
+    //Hace la busqueda del registro modificado para mostrarlo como respuesta;
 
     const [rows] = await pool.query(
       "SELECT * FROM dimensiones WHERE id_dimension = ?",

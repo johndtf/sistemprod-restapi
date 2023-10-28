@@ -29,7 +29,7 @@ export const getProfile = async (req, res) => {
 //-----------------Crear Perfil ---------------------------------
 export const createProfile = async (req, res) => {
   try {
-    const { perfil } = req.body;
+    const { perfil, descripcion } = req.body;
 
     // Verificar si el perfil ya existe
     const [existingProfiles] = await pool.query(
@@ -43,11 +43,12 @@ export const createProfile = async (req, res) => {
     }
 
     // El perfil no existe, proceder a la inserción
-    const [rows] = await pool.query("INSERT INTO perfiles(perfil) VALUES (?)", [
-      perfil,
-    ]);
+    const [rows] = await pool.query(
+      "INSERT INTO perfiles(perfil, descripcion) VALUES (?, ?)",
+      [perfil, descripcion]
+    );
 
-    res.send({ id: rows.insertId, perfil });
+    res.send({ id: rows.insertId, perfil, descripcion });
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
   }
@@ -58,17 +59,39 @@ export const updateProfile = async (req, res) => {
   try {
     const { id } = req.params;
     const { perfil } = req.body;
+    const { descripcion } = req.body;
 
-    const [result] = await pool.query(
-      "UPDATE perfiles SET perfil = IFNULL(?, perfil) WHERE id_perfil = ?",
+    //Verificar si el id del perfil existe
+    const [existingProfileId] = await pool.query(
+      "SELECT * FROM perfiles WHERE id_perfil = ?",
+      [id]
+    );
+
+    if (existingProfileId.length === 0) {
+      // El perfil a actualizar no existe, responder con un mensaje de error
+      return res.status(404).json({ message: "Perfil no encontrado" });
+    }
+
+    //Verificar que el perfil modificado no exista en la tabla
+    const [existingProfileName] = await pool.query(
+      "SELECT id_perfil FROM perfiles WHERE perfil = ? AND id_perfil != ?",
       [perfil, id]
+    );
+    //Si el perfil modificado está siendo usado por otro registro genera mensaje de error
+    if (existingProfileName.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "Este nombre ya está asociado a otro perfil" });
+    }
+
+    //Realiza la actualización en la tabla perfiles
+    const [result] = await pool.query(
+      "UPDATE perfiles SET perfil = IFNULL(?, perfil) , descripcion = IFNULL(?, descripcion) WHERE id_perfil = ?",
+      [perfil, descripcion, id]
       /* IFNULL se usa junto con la petición PATCH, si no le pasa valor lo deja como estaba */
     );
 
-    console.log(result);
-
-    if (result.affectedRows <= 0)
-      return res.status(404).json({ message: "profile not found" });
+    //Hace la busqueda del registro modificado para mostrarlo como respuesta;
 
     const [rows] = await pool.query(
       "SELECT * FROM perfiles WHERE id_perfil = ?",

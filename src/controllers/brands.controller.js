@@ -58,16 +58,37 @@ export const updateBrand = async (req, res) => {
     const { id } = req.params;
     const { marca } = req.body;
 
+    //Verificar si el id de la marca existe
+    const [existingBrandId] = await pool.query(
+      "SELECT * FROM marcas WHERE id_marca = ?",
+      [id]
+    );
+
+    if (existingBrandId.length === 0) {
+      // La marca a actualizar no existe, responder con un mensaje de error
+      return res.status(404).json({ message: "Marca no encontrada" });
+    }
+
+    //Verificar que la marca modificada no exista en la tabla
+    const [existingBrandName] = await pool.query(
+      "SELECT id_marca FROM marcas WHERE marca = ? AND id_marca != ?",
+      [marca, id]
+    );
+    //Si la marca modificada está siendo usada por otro registro genera mensaje de error
+    if (existingBrandName.length > 0) {
+      return res
+        .status(400)
+        .json({ message: "Este nombre ya está asociado a otra marca" });
+    }
+
+    //Realiza la actualización en la tabla marcas
     const [result] = await pool.query(
       "UPDATE marcas SET marca = IFNULL(?, marca) WHERE id_marca = ?",
       [marca, id]
       /* IFNULL se usa junto con la petición PATCH, si no le pasa valor lo deja como estaba */
     );
 
-    console.log(result);
-
-    if (result.affectedRows <= 0)
-      return res.status(404).json({ message: "Brand not found" });
+    //Hace la busqueda del registro modificado para mostrarlo como respuesta;
 
     const [rows] = await pool.query("SELECT * FROM marcas WHERE id_marca = ?", [
       id,

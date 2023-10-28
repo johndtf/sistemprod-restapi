@@ -1,21 +1,21 @@
 import { pool } from "../db.js";
 
-//----------Listado de Resoluciones de inspección---------------------------------
+//----------Listado de Resoluciones de garantías---------------------------------
 
-export const getResolutionsInsp = async (req, res) => {
+export const getResolutionsWarranty = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM resoluciones_i");
+    const [rows] = await pool.query("SELECT * FROM resoluciones_g");
     res.json(rows);
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
 
-//---------------Buscar Resoluciones de inspección por id -----------------------
-export const getResolutionInsp = async (req, res) => {
+//---------------Buscar Resoluciones de garantías por id -----------------------
+export const getResolutionWarranty = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM resoluciones_i WHERE id_inspec = ?",
+      "SELECT * FROM resoluciones_g WHERE id_resol_g = ?",
       [req.params.id]
     );
     if (rows.length <= 0)
@@ -26,25 +26,25 @@ export const getResolutionInsp = async (req, res) => {
   }
 };
 
-//-----------------Crear Resoluciones de inspección ---------------------------------
-export const createResolutionInsp = async (req, res) => {
+//-----------------Crear Resoluciones de garantías ---------------------------------
+export const createResolutionWarranty = async (req, res) => {
   try {
-    const { resol_inspec, codigo } = req.body;
+    const { resol_garan, codigo } = req.body;
 
     // Verificar si la resolución ya existe
-    const [existingResolutionsInsp] = await pool.query(
-      "SELECT id_inspec FROM resoluciones_i WHERE resol_inspec = ?",
-      [resol_inspec]
+    const [existingResolutionsWarranty] = await pool.query(
+      "SELECT id_resol_g FROM resoluciones_g WHERE resol_garan = ?",
+      [resol_garan]
     );
 
-    if (existingResolutionsInsp.length > 0) {
+    if (existingResolutionsWarranty.length > 0) {
       // La resolución ya existe, responder con un mensaje de error
       return res.status(400).json({ message: "La resolución ya existe" });
     }
 
     // Verificar si el código de la resolución ya existe
     const [existingResolutionsCode] = await pool.query(
-      "SELECT id_inspec FROM resoluciones_i WHERE codigo = ?",
+      "SELECT id_resol_g FROM resoluciones_g WHERE codigo = ?",
       [codigo]
     );
 
@@ -57,50 +57,40 @@ export const createResolutionInsp = async (req, res) => {
 
     // La resolución no existe, proceder a la inserción
     const [rows] = await pool.query(
-      "INSERT INTO resoluciones_i(resol_inspec, codigo) VALUES (?, ?)",
-      [resol_inspec, codigo]
+      "INSERT INTO resoluciones_g(resol_garan, codigo) VALUES (?, ?)",
+      [resol_garan, codigo]
     );
 
-    res.send({ id: rows.insertId, codigo, resol_inspec });
+    res.send({ id: rows.insertId, codigo, resol_garan });
   } catch (error) {
-    console.error("Error en resolutionInsp:", error);
+    console.error("Error en resolutionWarranty:", error);
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
 
-//------------------Actualizar Resoluciones de inspección ----------------------------
-export const updateResolutionInsp = async (req, res) => {
+//------------------Actualizar Resoluciones de garantías ----------------------------
+export const updateResolutionWarranty = async (req, res) => {
   try {
     const { id } = req.params;
-    const { resol_inspec, codigo } = req.body;
-
-    //Verificar que no se intente modificar los códigos 1 y 2 "PENDIENTE" y "APTA"
-
-    if (id <= 2) {
-      //Se está intentando modificar las resoluciones Pendiente o Apta
-      return res.status(400).json({
-        message:
-          "Las resoluciones del sistéma APTA O PENDIENTE no deben ser modificadas",
-      });
-    }
+    const { resol_garan, codigo } = req.body;
 
     //Verificar si el id de la resolución existe
     const [existingResolutionId] = await pool.query(
-      "SELECT * FROM resoluciones_i WHERE id_inspec = ?",
+      "SELECT * FROM resoluciones_g WHERE id_resol_g = ?",
       [id]
     );
 
     if (existingResolutionId.length === 0) {
-      //El id de la resolución de inspección no existe, se responde con un mensaje de error
+      //El id de la resolución de garantías no existe, se responde con un mensaje de error
       return res
         .status(404)
-        .json({ message: "Resolución de Inspección no encontrada" });
+        .json({ message: "Resolución de Garantías no encontrada" });
     }
 
     //Verificar que la resolución modificada no exista en la tabla
     const [existingResolutionName] = await pool.query(
-      "SELECT id_inspec FROM resoluciones_i WHERE resol_inspec = ? AND id_inspec != ?",
-      [resol_inspec, id]
+      "SELECT id_resol_g FROM resoluciones_g WHERE resol_garan = ? AND id_resol_g != ?",
+      [resol_garan, id]
     );
 
     //Si esta descripción de resolución está siendo usada por otra resolución, genera mensaje de error
@@ -108,12 +98,12 @@ export const updateResolutionInsp = async (req, res) => {
     if (existingResolutionName.length > 0) {
       return res
         .status(400)
-        .json({ message: "Esta resolución de inspección ya existe" });
+        .json({ message: "Esta resolución de garantías ya existe" });
     }
 
     //Verificar que el código de la resolución modificada no exista en la tabla
     const [existingResolutionCode] = await pool.query(
-      "SELECT id_inspec FROM resoluciones_i WHERE codigo = ? AND id_inspec != ?",
+      "SELECT id_resol_g FROM resoluciones_g WHERE codigo = ? AND id_resol_g != ?",
       [codigo, id]
     );
 
@@ -125,17 +115,17 @@ export const updateResolutionInsp = async (req, res) => {
         .json({ message: "Este código de resolución ya existe" });
     }
 
-    //Realiza la actualización en la tabla resoluciones_i
+    //Realiza la actualización en la tabla resoluciones_g
     const [result] = await pool.query(
-      "UPDATE resoluciones_i SET resol_inspec = IFNULL(?, resol_inspec), codigo = IFNULL(?, codigo) WHERE id_inspec = ?",
-      [resol_inspec, codigo, id]
+      "UPDATE resoluciones_g SET resol_garan = IFNULL(?, resol_garan), codigo = IFNULL(?, codigo) WHERE id_resol_g = ?",
+      [resol_garan, codigo, id]
       /* IFNULL se usa junto con la petición PATCH, si no le pasa valor lo deja como estaba */
     );
 
     //Hace la busqueda del registro modificado para mostrarlo como respuesta
 
     const [rows] = await pool.query(
-      "SELECT * FROM resoluciones_i WHERE id_inspec = ?",
+      "SELECT * FROM resoluciones_g WHERE id_resol_g = ?",
       [id]
     );
 
@@ -145,11 +135,11 @@ export const updateResolutionInsp = async (req, res) => {
   }
 };
 
-//--------------------Borrar Resoluciones de inspección -------------------------------
-/* export const deleteResolutionInsp = async (req, res) => {
+//--------------------Borrar Resoluciones de garantías -------------------------------
+/* export const deleteResolutionWarranty = async (req, res) => {
   try {
     const [result] = await pool.query(
-      "DELETE FROM resoluciones_i WHERE id_inspec = ?",
+      "DELETE FROM resoluciones_g WHERE id_resol_g = ?",
       [req.params.id]
     );
     if (result.affectedRows <= 0)

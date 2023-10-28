@@ -6,7 +6,8 @@ import customersRoutes from "./routes/customers.routes.js";
 import brandsRoutes from "./routes/brands.routes.js";
 import dimensionsRoutes from "./routes/dimensions.routes.js";
 import treadsRoutes from "./routes/treads.routes.js";
-import resolutionsInspRoutes from "./routes/resolutionsInsp.routes.js"
+import resolutionsInspRoutes from "./routes/resolutionsInsp.routes.js";
+import resolutionsWarrantyRoutes from "./routes/resolutionsWarranty.routes.js";
 
 const app = express();
 // para que entienda la información de tipo json que llega
@@ -20,6 +21,7 @@ app.use(brandsRoutes);
 app.use(dimensionsRoutes);
 app.use(treadsRoutes);
 app.use(resolutionsInspRoutes);
+app.use(resolutionsWarrantyRoutes);
 
 /* Manejo de rutas que no existen */
 app.use((req, res, next) => {
