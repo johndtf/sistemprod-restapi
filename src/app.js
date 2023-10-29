@@ -8,18 +8,14 @@ import dimensionsRoutes from "./routes/dimensions.routes.js";
 import treadsRoutes from "./routes/treads.routes.js";
 import resolutionsInspRoutes from "./routes/resolutionsInsp.routes.js";
 import resolutionsWarrantyRoutes from "./routes/resolutionsWarranty.routes.js";
+import cors from "cors";
 
 const app = express();
 
-const cors = require("cors");
 // para que entienda la información de tipo json que llega
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: "http://127.0.0.1:5501",
-  })
-);
+app.use(cors({ origin: "http://127.0.0.1:5501" }));
 
 app.use(indexRoutes);
 app.use(profilesRoutes);
