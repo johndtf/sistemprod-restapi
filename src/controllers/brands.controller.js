@@ -11,11 +11,11 @@ export const getBrands = async (req, res) => {
   }
 };
 
-//---------------Buscar Marca por id -----------------------
+//---------------Buscar Marca por descripción -----------------------
 export const getBrand = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM marcas WHERE id_marca = ?", [
-      req.params.id,
+    const [rows] = await pool.query("SELECT * FROM marcas WHERE marca = ?", [
+      req.params.marca,
     ]);
     if (rows.length <= 0)
       return res.status(404).json({ message: "Marca no encontrada" });

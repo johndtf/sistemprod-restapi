@@ -15,7 +15,15 @@ const app = express();
 // para que entienda la información de tipo json que llega
 app.use(express.json());
 
-app.use(cors({ origin: "http://127.0.0.1:5501" }));
+// Configurar CORS para permitir el acceso desde múltiples dominios, en este caso desde el servidor local de vscode que levanta con Go Live para desarrollo
+
+const allowedOrigins = ["otradireccion", "http://127.0.0.1:5501"];
+const corsOptions = {
+  origin: allowedOrigins,
+  optionsSuccessStatus: 200, // Algunos navegadores antiguos pueden requerir esto
+};
+
+app.use(cors(corsOptions));
 
 app.use(indexRoutes);
 app.use(profilesRoutes);
