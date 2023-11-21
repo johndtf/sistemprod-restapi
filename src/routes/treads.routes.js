@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 router.get("/treads", getTreads);
-router.get("/treads/:id", getTread);
+router.get("/treads/:banda", getTread);
 router.post("/treads", createTread);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
 router.patch("/treads/:id", updateTread);

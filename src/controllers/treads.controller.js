@@ -11,11 +11,11 @@ export const getTreads = async (req, res) => {
   }
 };
 
-//---------------Buscar Banda por id -----------------------
+//---------------Buscar Banda por descripción -----------------------
 export const getTread = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM bandas WHERE id_banda = ?", [
-      req.params.id,
+    const [rows] = await pool.query("SELECT * FROM bandas WHERE banda = ?", [
+      req.params.banda,
     ]);
     if (rows.length <= 0)
       return res.status(404).json({ message: "Banda no encontrada" });

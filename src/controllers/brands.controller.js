@@ -101,7 +101,7 @@ export const updateBrand = async (req, res) => {
 };
 
 //--------------------Borrar marca ----------------------------------
-export const deleteBrand = async (req, res) => {
+/* export const deleteBrand = async (req, res) => {
   try {
     const [result] = await pool.query("DELETE FROM marcas WHERE id_marca = ?", [
       req.params.id,
@@ -113,4 +113,4 @@ export const deleteBrand = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
   }
-};
+}; */

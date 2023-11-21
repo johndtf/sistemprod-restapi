@@ -11,12 +11,12 @@ export const getDimensions = async (req, res) => {
   }
 };
 
-//---------------Buscar Dimensión por id -----------------------
+//---------------Buscar Dimensión por descripción -----------------------
 export const getDimension = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM dimensiones WHERE id_dimension = ?",
-      [req.params.id]
+      "SELECT * FROM dimensiones WHERE dimension = ?",
+      [req.params.dimension]
     );
     if (rows.length <= 0)
       return res.status(404).json({ message: "Dimensión no encontrada" });
@@ -105,7 +105,7 @@ export const updateDimension = async (req, res) => {
 };
 
 //--------------------Borrar Dimensión ----------------------------------
-export const deleteDimension = async (req, res) => {
+/* export const deleteDimension = async (req, res) => {
   try {
     const [result] = await pool.query(
       "DELETE FROM dimensiones WHERE id_dimension = ?",
@@ -118,4 +118,4 @@ export const deleteDimension = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
   }
-};
+}; */
