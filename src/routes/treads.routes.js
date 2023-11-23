@@ -9,11 +9,11 @@ import {
 
 const router = Router();
 
-router.get("/treads", getTreads);
-router.get("/treads/:banda", getTread);
-router.post("/treads", createTread);
+router.get("/api/treads", getTreads);
+router.get("/api/treads/:banda", getTread);
+router.post("/api/treads", createTread);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
-router.patch("/treads/:id", updateTread);
-/* router.delete("/treads/:id", deleteTread); */
+router.patch("/api/treads/:id", updateTread);
+/* router.delete("/api/treads/:id", deleteTread); */
 
 export default router;

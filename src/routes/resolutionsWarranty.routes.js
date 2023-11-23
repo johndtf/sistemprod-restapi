@@ -8,11 +8,11 @@ import {
 
 const router = Router();
 
-router.get("/resolutionsWarranty", getResolutionsWarranty);
-router.get("/resolutionsWarranty/:id", getResolutionWarranty);
-router.post("/resolutionsWarranty", createResolutionWarranty);
+router.get("/api/resolutionsWarranty", getResolutionsWarranty);
+router.get("/api/resolutionsWarranty/:codigo", getResolutionWarranty);
+router.post("/api/resolutionsWarranty", createResolutionWarranty);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
-router.patch("/resolutionsWarranty/:id", updateResolutionWarranty);
-//router.delete("/resolutionsWarranty/:id", deleteResolutionWarranty);
+router.patch("/api/resolutionsWarranty/:id", updateResolutionWarranty);
+//router.delete("/api/resolutionsWarranty/:id", deleteResolutionWarranty);
 
 export default router;

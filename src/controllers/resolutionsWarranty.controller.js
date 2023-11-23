@@ -11,12 +11,12 @@ export const getResolutionsWarranty = async (req, res) => {
   }
 };
 
-//---------------Buscar Resoluciones de garantías por id -----------------------
+//---------------Buscar Resoluciones de garantías por código -----------------------
 export const getResolutionWarranty = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM resoluciones_g WHERE id_resol_g = ?",
-      [req.params.id]
+      "SELECT * FROM resoluciones_g WHERE codigo = ?",
+      [req.params.codigo]
     );
     if (rows.length <= 0)
       return res.status(404).json({ message: "Resolución no encontrada" });

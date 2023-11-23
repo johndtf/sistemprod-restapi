@@ -9,11 +9,11 @@ import {
 
 const router = Router();
 
-router.get("/customers", getCustomers);
-router.get("/customers/:cedula_nit", getCustomer);
-router.post("/customers", createCustomer);
+router.get("/api/customers", getCustomers);
+router.get("/api/customers/:cedula_nit", getCustomer);
+router.post("/api/customers", createCustomer);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
-router.patch("/customers/:id", updateCustomer);
-//router.delete("/customers/:id", deleteCustomer);
+router.patch("/api/customers/:id", updateCustomer);
+//router.delete("/api/customers/:id", deleteCustomer);
 
 export default router;

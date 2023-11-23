@@ -9,11 +9,11 @@ import {
 
 const router = Router();
 
-router.get("/resolutionsInsp", getResolutionsInsp);
-router.get("/resolutionsInsp/:codigo", getResolutionInsp);
-router.post("/resolutionsInsp", createResolutionInsp);
+router.get("/api/resolutionsInsp", getResolutionsInsp);
+router.get("/api/resolutionsInsp/:codigo", getResolutionInsp);
+router.post("/api/resolutionsInsp", createResolutionInsp);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
-router.patch("/resolutionsInsp/:id", updateResolutionInsp);
-//router.delete("/resolutionsInsp/:id", deleteResolutionInsp);
+router.patch("/api/resolutionsInsp/:id", updateResolutionInsp);
+//router.delete("/api/resolutionsInsp/:id", deleteResolutionInsp);
 
 export default router;

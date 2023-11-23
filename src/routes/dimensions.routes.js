@@ -9,11 +9,11 @@ import {
 
 const router = Router();
 
-router.get("/dimensions", getDimensions);
-router.get("/dimensions/:dimension", getDimension);
-router.post("/dimensions", createDimension);
+router.get("/api/dimensions", getDimensions);
+router.get("/api/dimensions/:dimension", getDimension);
+router.post("/api/dimensions", createDimension);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
-router.patch("/dimensions/:id", updateDimension);
-//router.delete("/dimensions/:id", deleteDimension);
+router.patch("/api/dimensions/:id", updateDimension);
+//router.delete("/api/dimensions/:id", deleteDimension);
 
 export default router;
