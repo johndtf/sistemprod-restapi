@@ -11,12 +11,12 @@ export const getResolutionsInsp = async (req, res) => {
   }
 };
 
-//---------------Buscar Resoluciones de inspección por id -----------------------
+//---------------Buscar Resoluciones de inspección por código -----------------------
 export const getResolutionInsp = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM resoluciones_i WHERE id_inspec = ?",
-      [req.params.id]
+      "SELECT * FROM resoluciones_i WHERE codigo = ?",
+      [req.params.codigo]
     );
     if (rows.length <= 0)
       return res.status(404).json({ message: "Resolución no encontrada" });
