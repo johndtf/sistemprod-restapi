@@ -105,7 +105,7 @@ export const updateProfile = async (req, res) => {
 };
 
 //--------------------Borrar Perfil ----------------------------------
-export const deleteProfile = async (req, res) => {
+/* export const deleteProfile = async (req, res) => {
   try {
     const [result] = await pool.query(
       "DELETE FROM perfiles WHERE id_perfil = ?",
@@ -119,3 +119,4 @@ export const deleteProfile = async (req, res) => {
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
+ */

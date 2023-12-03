@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 router.get("/api/dimensions", getDimensions);
-router.get("/api/dimensions/:dimension", getDimension);
+router.post("/api/dimensions/dimension", getDimension);
 router.post("/api/dimensions", createDimension);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
 router.patch("/api/dimensions/:id", updateDimension);

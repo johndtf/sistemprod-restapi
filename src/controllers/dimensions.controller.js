@@ -11,13 +11,15 @@ export const getDimensions = async (req, res) => {
   }
 };
 
-//---------------Buscar Dimensión por descripción -----------------------
+//---------------Buscar Dimensión por descripcion -----------------------
 export const getDimension = async (req, res) => {
   try {
+    const { dimension } = req.body;
     const [rows] = await pool.query(
       "SELECT * FROM dimensiones WHERE dimension = ?",
-      [req.params.dimension]
+      [dimension]
     );
+    ("0p");
     if (rows.length <= 0)
       return res.status(404).json({ message: "Dimensión no encontrada" });
     res.send(rows[0]);
