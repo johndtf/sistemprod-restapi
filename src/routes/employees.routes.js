@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   getEmployees,
-  getEmployee,
+  //getEmployee,
   createEmployee,
   updateEmployee,
   //deleteEmployee,
@@ -9,8 +9,8 @@ import {
 
 const router = Router();
 
-router.get("/api/employees", getEmployees);
-router.get("/api/employees/:cedula", getEmployee);
+router.post("/api/employees/employeeslist", getEmployees);
+//router.get("/api/employees/:cedula", getEmployee);
 router.post("/api/employees", createEmployee);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
 router.patch("/api/employees/:id", updateEmployee);

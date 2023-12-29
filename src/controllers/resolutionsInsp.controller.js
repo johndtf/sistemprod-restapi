@@ -11,16 +11,15 @@ export const getResolutionsInsp = async (req, res) => {
   }
 };
 
-//---------------Buscar Resoluciones de inspección por código -----------------------
+//------------Buscar Resoluciones de inspección por código y descripción -----------
 export const getResolutionInsp = async (req, res) => {
   try {
+    const { codigo, resol_inspec } = req.body;
     const [rows] = await pool.query(
-      "SELECT * FROM resoluciones_i WHERE codigo = ?",
-      [req.params.codigo]
+      "SELECT * FROM resoluciones_i WHERE codigo LIKE ? AND resol_inspec LIKE ? ",
+      [`%${codigo}%`, `%${resol_inspec}%`]
     );
-    if (rows.length <= 0)
-      return res.status(404).json({ message: "Resolución no encontrada" });
-    res.send(rows[0]);
+    res.json(rows);
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
   }
@@ -30,6 +29,20 @@ export const getResolutionInsp = async (req, res) => {
 export const createResolutionInsp = async (req, res) => {
   try {
     const { resol_inspec, codigo } = req.body;
+
+    //Validar tamaño del código
+    if (codigo.length < 1 || codigo.length > 2) {
+      return res.status(400).json({
+        message: "El código debe tener de 1 a 2 caracteres",
+      });
+    }
+
+    //Validar tamaño de la resolución
+    if (resol_inspec.length < 4 || resol_inspec.length > 45) {
+      return res.status(400).json({
+        message: "La resolución debe tener entre 4 y 45 caracteres",
+      });
+    }
 
     // Verificar si la resolución ya existe
     const [existingResolutionsInsp] = await pool.query(
@@ -84,6 +97,19 @@ export const updateResolutionInsp = async (req, res) => {
       });
     }
 
+    //Validar tamaño del código
+    if (codigo.length < 1 || codigo.length > 2) {
+      return res.status(400).json({
+        message: "El código debe tener de 1 a 2 caracteres",
+      });
+    }
+
+    //Validar tamaño de la resolución
+    if (resol_inspec.length < 4 || resol_inspec.length > 45) {
+      return res.status(400).json({
+        message: "La resolución debe tener entre 4 y 45 caracteres",
+      });
+    }
     //Verificar si el id de la resolución existe
     const [existingResolutionId] = await pool.query(
       "SELECT * FROM resoluciones_i WHERE id_inspec = ?",

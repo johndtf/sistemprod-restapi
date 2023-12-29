@@ -9,8 +9,8 @@ import {
 
 const router = Router();
 
-router.get("/api/resolutionsInsp", getResolutionsInsp);
-router.get("/api/resolutionsInsp/:codigo", getResolutionInsp);
+router.post("/api/resolutionsInsp/resolutionslist", getResolutionsInsp);
+//router.get("/api/resolutionsInsp/:codigo", getResolutionInsp);
 router.post("/api/resolutionsInsp", createResolutionInsp);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
 router.patch("/api/resolutionsInsp/:id", updateResolutionInsp);

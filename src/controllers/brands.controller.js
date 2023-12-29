@@ -4,7 +4,10 @@ import { pool } from "../db.js";
 
 export const getBrands = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM marcas");
+    const { marca } = req.body;
+    const [rows] = await pool.query("SELECT * FROM marcas WHERE marca LIKE ?", [
+      `%${marca}%`,
+    ]);
     res.json(rows);
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
@@ -12,7 +15,7 @@ export const getBrands = async (req, res) => {
 };
 
 //---------------Buscar Marca por descripción -----------------------
-export const getBrand = async (req, res) => {
+/* export const getBrand = async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM marcas WHERE marca = ?", [
       req.params.marca,
@@ -24,11 +27,17 @@ export const getBrand = async (req, res) => {
     return res.status(500).json({ message: "Something goes wrong" });
   }
 };
-
+ */
 //-----------------Crear Marca ---------------------------------
 export const createBrand = async (req, res) => {
   try {
     const { marca } = req.body;
+
+    if (marca.length < 2 || marca.length > 20) {
+      return res
+        .status(400)
+        .json({ message: "La marca debe tener entre 2 y 20 caracteres" });
+    }
 
     // Verificar si la marca ya existe
     const [existingBrands] = await pool.query(
@@ -58,6 +67,11 @@ export const updateBrand = async (req, res) => {
     const { id } = req.params;
     const { marca } = req.body;
 
+    if (marca.length < 2 || marca.length > 20) {
+      return res
+        .status(400)
+        .json({ message: "La marca debe tener entre 2 y 20 caracteres" });
+    }
     //Verificar si el id de la marca existe
     const [existingBrandId] = await pool.query(
       "SELECT * FROM marcas WHERE id_marca = ?",

@@ -3,7 +3,7 @@
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `empleados` (
   `id_empleado` MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `cedula` INT UNSIGNED NOT NULL,
+  `cedula` BIGINT UNSIGNED NOT NULL,
   `nombre` VARCHAR(45) NOT NULL,
   `apellido` VARCHAR(45) NOT NULL,
   `telefono` VARCHAR(10) NOT NULL,  
@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `empleados` (
   `id_perfil` TINYINT UNSIGNED NOT NULL,
   `contrasenia` VARCHAR(128) NULL,
   `estado` VARCHAR(1) NOT NULL,
+  `temporal` tinyint NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_empleado`),
   UNIQUE INDEX `id_empleado_UNIQUE` (`id_empleado` ASC) VISIBLE,
   UNIQUE INDEX `cedula_UNIQUE` (`cedula` ASC) VISIBLE,

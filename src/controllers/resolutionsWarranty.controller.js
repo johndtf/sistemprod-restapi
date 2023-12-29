@@ -4,7 +4,11 @@ import { pool } from "../db.js";
 
 export const getResolutionsWarranty = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM resoluciones_g");
+    const { codigo, resol_garan } = req.body;
+    const [rows] = await pool.query(
+      "SELECT * FROM resoluciones_g WHERE codigo LIKE ? AND resol_garan LIKE ? ",
+      [`%${codigo}%`, `%${resol_garan}%`]
+    );
     res.json(rows);
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
@@ -12,7 +16,7 @@ export const getResolutionsWarranty = async (req, res) => {
 };
 
 //---------------Buscar Resoluciones de garantías por código -----------------------
-export const getResolutionWarranty = async (req, res) => {
+/* export const getResolutionWarranty = async (req, res) => {
   try {
     const [rows] = await pool.query(
       "SELECT * FROM resoluciones_g WHERE codigo = ?",
@@ -24,12 +28,26 @@ export const getResolutionWarranty = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
   }
-};
+}; */
 
 //-----------------Crear Resoluciones de garantías ---------------------------------
 export const createResolutionWarranty = async (req, res) => {
   try {
     const { resol_garan, codigo } = req.body;
+
+    //Validar tamaño del código
+    if (codigo.length < 1 || codigo.length > 2) {
+      return res.status(400).json({
+        message: "El código debe tener de 1 a 2 caracteres",
+      });
+    }
+
+    //Validar tamaño de la resolución
+    if (resol_garan.length < 4 || resol_garan.length > 45) {
+      return res.status(400).json({
+        message: "La resolución debe tener entre 4 y 45 caracteres",
+      });
+    }
 
     // Verificar si la resolución ya existe
     const [existingResolutionsWarranty] = await pool.query(
@@ -73,6 +91,20 @@ export const updateResolutionWarranty = async (req, res) => {
   try {
     const { id } = req.params;
     const { resol_garan, codigo } = req.body;
+
+    //Validar tamaño del código
+    if (codigo.length < 1 || codigo.length > 2) {
+      return res.status(400).json({
+        message: "El código debe tener de 1 a 2 caracteres",
+      });
+    }
+
+    //Validar tamaño de la resolución
+    if (resol_garan.length < 4 || resol_garan.length > 45) {
+      return res.status(400).json({
+        message: "La resolución debe tener entre 4 y 45 caracteres",
+      });
+    }
 
     //Verificar si el id de la resolución existe
     const [existingResolutionId] = await pool.query(

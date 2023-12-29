@@ -43,7 +43,7 @@ export const createCustomer = async (req, res) => {
 
     if (apellido.length > 45) {
       return res.status(400).json({
-        message: "El apellido debe tener entre 2 y 45 caracteres",
+        message: "El apellido no debe ser de más de 45 caracteres",
       });
     }
 
@@ -180,6 +180,21 @@ export const getCustomers = async (req, res) => {
   }
 }; */
 
+//----------------Obtener información de la empresa -----------------------
+export const getCompany = async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT d.id, d.eslogan, c.cedula_nit, c.nombre, c.apellido FROM data d JOIN clientes c ON d.id = c.id_cliente WHERE c.id_cliente = d.id"
+    );
+    if (rows.length <= 0)
+      return res.status(404).json({ message: "cliente no encontrado" });
+    res.send(rows[0]);
+  } catch (error) {
+    console.error("Error en getCustomer:", error);
+    return res.status(500).json({ message: "Something goes wrong" });
+  }
+};
+
 //-------------------Modificar cliente -----------------------------------
 
 export const updateCustomer = async (req, res) => {
@@ -234,7 +249,7 @@ export const updateCustomer = async (req, res) => {
 
     if (apellido.length > 45) {
       return res.status(400).json({
-        message: "El apellido debe tener entre 2 y 45 caracteres",
+        message: "El apellido no debe tener más de 45 caracteres",
       });
     }
 

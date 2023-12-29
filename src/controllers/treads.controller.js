@@ -4,7 +4,10 @@ import { pool } from "../db.js";
 
 export const getTreads = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM bandas");
+    const { banda } = req.body;
+    const [rows] = await pool.query("SELECT * FROM bandas WHERE banda LIKE ?", [
+      `%${banda}%`,
+    ]);
     res.json(rows);
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
@@ -12,7 +15,7 @@ export const getTreads = async (req, res) => {
 };
 
 //---------------Buscar Banda por descripción -----------------------
-export const getTread = async (req, res) => {
+/* export const getTread = async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM bandas WHERE banda = ?", [
       req.params.banda,
@@ -23,12 +26,19 @@ export const getTread = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
   }
-};
+}; */
 
 //-----------------Crear Banda ---------------------------------
 export const createTread = async (req, res) => {
   try {
     const { banda } = req.body;
+
+    //Validar tamaño de la banda
+    if (banda.length < 2 || banda.length > 20) {
+      return res.status(400).json({
+        message: "La banda debe tener entre 2 y 20 caracteres",
+      });
+    }
 
     // Verificar si la Banda ya existe
     const [existingTreads] = await pool.query(
@@ -57,6 +67,13 @@ export const updateTread = async (req, res) => {
   try {
     const { id } = req.params;
     const { banda } = req.body;
+
+    //Validar tamaño de la banda
+    if (banda.length < 2 || banda.length > 20) {
+      return res.status(400).json({
+        message: "La banda debe tener entre 2 y 20 caracteres",
+      });
+    }
 
     //Verificar si el id de la banda existe
     const [existingTreadId] = await pool.query(

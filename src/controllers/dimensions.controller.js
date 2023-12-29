@@ -4,7 +4,11 @@ import { pool } from "../db.js";
 
 export const getDimensions = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM dimensiones");
+    const { dimension } = req.body;
+    const [rows] = await pool.query(
+      "SELECT * FROM dimensiones WHERE dimension LIKE ?",
+      [`%${dimension}%`]
+    );
     res.json(rows);
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
@@ -12,7 +16,7 @@ export const getDimensions = async (req, res) => {
 };
 
 //---------------Buscar Dimensión por descripcion -----------------------
-export const getDimension = async (req, res) => {
+/* export const getDimension = async (req, res) => {
   try {
     const { dimension } = req.body;
     const [rows] = await pool.query(
@@ -26,12 +30,19 @@ export const getDimension = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
   }
-};
+}; */
 
 //-----------------Crear Dimensión ---------------------------------
 export const createDimension = async (req, res) => {
   try {
     const { dimension } = req.body;
+
+    //Validar tamaño de la dimensión
+    if (dimension.length < 2 || dimension.length > 20) {
+      return res.status(400).json({
+        message: "La dimensión debe tener entre 2 y 20 caracteres",
+      });
+    }
 
     // Verificar si la dimensión ya existe
     const [existingDimensions] = await pool.query(
@@ -62,6 +73,13 @@ export const updateDimension = async (req, res) => {
   try {
     const { id } = req.params;
     const { dimension } = req.body;
+
+    //Validar tamaño de la dimensión
+    if (dimension.length < 2 || dimension.length > 20) {
+      return res.status(400).json({
+        message: "La dimensión debe tener entre 2 y 20 caracteres",
+      });
+    }
 
     //Verificar si el id de la dimensión existe
     const [existingDimensionId] = await pool.query(

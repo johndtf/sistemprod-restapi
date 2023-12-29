@@ -1,15 +1,13 @@
 import { Router } from "express";
 import {
   getResolutionsWarranty,
-  getResolutionWarranty,
   createResolutionWarranty,
   updateResolutionWarranty,
 } from "../controllers/resolutionsWarranty.controller.js";
 
 const router = Router();
 
-router.get("/api/resolutionsWarranty", getResolutionsWarranty);
-router.get("/api/resolutionsWarranty/:codigo", getResolutionWarranty);
+router.post("/api/resolutionsWarranty/resolutionslist", getResolutionsWarranty);
 router.post("/api/resolutionsWarranty", createResolutionWarranty);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
 router.patch("/api/resolutionsWarranty/:id", updateResolutionWarranty);

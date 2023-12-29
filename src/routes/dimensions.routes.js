@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   getDimensions,
-  getDimension,
+  // getDimension,
   createDimension,
   updateDimension,
   //deleteDimension,
@@ -9,8 +9,8 @@ import {
 
 const router = Router();
 
-router.get("/api/dimensions", getDimensions);
-router.post("/api/dimensions/dimension", getDimension);
+router.post("/api/dimensions/dimensionslist", getDimensions);
+//router.post("/api/dimensions/dimension", getDimension);
 router.post("/api/dimensions", createDimension);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
 router.patch("/api/dimensions/:id", updateDimension);

@@ -1,8 +1,8 @@
 import { pool } from "../db.js";
 
-//----------Listado de Perfil---------------------------------
+//----------Listado  de Perfiles---------------------------------
 
-export const getProfiles = async (req, res) => {
+export const getProfilesList = async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM perfiles");
     res.json(rows);
@@ -11,8 +11,23 @@ export const getProfiles = async (req, res) => {
   }
 };
 
+//----------Listado filtrado de Perfiles---------------------------------
+
+export const getProfiles = async (req, res) => {
+  try {
+    const { perfil, descripcion } = req.body;
+    const [rows] = await pool.query(
+      "SELECT * FROM perfiles WHERE perfil LIKE ? AND descripcion LIKE ? ",
+      [`%${perfil}%`, `%${descripcion}%`]
+    );
+    res.json(rows);
+  } catch (error) {
+    return res.status(500).json({ message: "Something goes wrong" });
+  }
+};
+
 //---------------Buscar Perfil por id -----------------------
-export const getProfile = async (req, res) => {
+/* export const getProfile = async (req, res) => {
   try {
     const [rows] = await pool.query(
       "SELECT * FROM perfiles WHERE id_perfil = ?",
@@ -24,7 +39,7 @@ export const getProfile = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: "Something goes wrong" });
   }
-};
+}; */
 
 //-----------------Crear Perfil ---------------------------------
 export const createProfile = async (req, res) => {
