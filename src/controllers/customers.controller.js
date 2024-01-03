@@ -165,33 +165,59 @@ export const getCustomers = async (req, res) => {
 
 //------------------------ Obtener cliente por Cédula ----------------
 
-/* export const getCustomer = async (req, res) => {
+export const getCustomer = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT * FROM clientes WHERE cedula_nit = ?",
+      "SELECT id_cliente, nombre, apellido, cedula_nit, dv, telefono, email, direccion, estado FROM clientes WHERE cedula_nit = ?",
       [req.params.cedula_nit]
     );
-    if (rows.length <= 0)
-      return res.status(404).json({ message: "cliente no encontrado" });
-    res.send(rows[0]);
+    if (rows.length <= 0) {
+      return res.status(404).json({ message: "Cliente no encontrado" });
+    }
+    res.status(200).json(rows[0]);
   } catch (error) {
     console.error("Error en getCustomer:", error);
-    return res.status(500).json({ message: "Something goes wrong" });
+    res.status(500).json({ message: "Error interno del servidor" });
   }
-}; */
+};
 
 //----------------Obtener información de la empresa -----------------------
+//Envía la información de la empresa reencauchadora desde las tablas data y clientes
 export const getCompany = async (req, res) => {
   try {
     const [rows] = await pool.query(
       "SELECT d.id, d.eslogan, c.cedula_nit, c.nombre, c.apellido FROM data d JOIN clientes c ON d.id = c.id_cliente WHERE c.id_cliente = d.id"
     );
+
     if (rows.length <= 0)
-      return res.status(404).json({ message: "cliente no encontrado" });
+      return res.status(404).json({ message: "Compañía no encontrada" });
     res.send(rows[0]);
   } catch (error) {
     console.error("Error en getCustomer:", error);
     return res.status(500).json({ message: "Something goes wrong" });
+  }
+};
+
+//-------------------Actualizar la información de la empresa-----------------------
+
+export const updateData = async (req, res) => {
+  try {
+    const { id, eslogan } = req.body;
+
+    // Verificar si el id y eslogan están presentes en el cuerpo de la solicitud
+    if (!id || !eslogan) {
+      return res.status(400).json({
+        error: "Se requiere el id y el eslogan para la actualización",
+      });
+    }
+
+    // Realizar la actualización en la base de datos
+    await pool.query("UPDATE data SET eslogan = ? , id = ?", [eslogan, id]);
+
+    res.status(200).json({ message: "Registro actualizado exitosamente" });
+  } catch (error) {
+    console.error("Error en updateData:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
 
@@ -225,7 +251,7 @@ export const updateCustomer = async (req, res) => {
     for (const campo of camposRequeridos) {
       if (!req.body[campo]) {
         return res.status(400).json({
-          message: `El campo ${campo} es obligatorio`,
+          message: `El campo ${campo} es obligatorio `,
         });
       }
     }
