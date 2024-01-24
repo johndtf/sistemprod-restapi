@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS `empleados` (
   `contrasenia` VARCHAR(128) NULL,
   `estado` VARCHAR(1) NOT NULL,
   `temporal` tinyint NOT NULL DEFAULT '1',
+  `cod_recuperacion` varchar(6) DEFAULT NULL,
+  `cod_expiracion` datetime DEFAULT NULL,
   PRIMARY KEY (`id_empleado`),
   UNIQUE INDEX `id_empleado_UNIQUE` (`id_empleado` ASC) VISIBLE,
   UNIQUE INDEX `cedula_UNIQUE` (`cedula` ASC) VISIBLE,
