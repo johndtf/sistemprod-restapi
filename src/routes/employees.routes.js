@@ -7,9 +7,15 @@ import {
   //deleteEmployee,
 } from "../controllers/employees.controller.js";
 
+import { verifyPermission } from "../middlewares/verifypermission.myddlewares.js";
+
 const router = Router();
 
-router.post("/api/employees/employeeslist", getEmployees);
+router.post(
+  "/api/employees/employeeslist",
+  verifyPermission("empleados"),
+  getEmployees
+);
 //router.get("/api/employees/:cedula", getEmployee);
 router.post("/api/employees", createEmployee);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */

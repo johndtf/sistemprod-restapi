@@ -4,7 +4,7 @@ import crypto from "crypto";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import { EMAIL_PASSWORD, EMAIL_USER, JWT_SECRET_KEY } from "../config.js";
-import { serialize } from "cookie";
+//import { serialize } from "cookie";
 
 //---------------------- Lógica de autenticación...------------------------------
 
@@ -35,17 +35,7 @@ export const login = async (req, res) => {
     const options = { expiresIn: "14h" };
     const token = jwt.sign(payload, secretKey, options);
 
-    const cookieOptions = {
-      maxAge: 900000, // Tiempo de expiración
-      httpOnly: true, // Hace que la cookie sea accesible solo mediante HTTP
-      secure: true, // Configurar a true si se usa HTTPS
-      sameSite: "None", // Configurar a "None" si se establece desde otro dominio
-    };
-
-    const serializedToken = serialize("myTokenName", token, cookieOptions);
-    res.setHeader("Set-Cookie", serializedToken);
-
-    res.json({ token });
+    res.json(token);
   } catch (error) {
     console.error("Error en login:", error);
     return res

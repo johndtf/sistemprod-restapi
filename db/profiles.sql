@@ -9,3 +9,5 @@ CREATE TABLE IF NOT EXISTS `perfiles` (
   UNIQUE INDEX `id_perfil_UNIQUE` (`id_perfil` ASC) VISIBLE,
   UNIQUE INDEX `perfil_nombre_UNIQUE` (`perfil` ASC) VISIBLE)
 ENGINE = InnoDB;
+
+

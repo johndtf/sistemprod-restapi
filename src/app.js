@@ -11,6 +11,7 @@ import treadsRoutes from "./routes/treads.routes.js";
 import resolutionsInspRoutes from "./routes/resolutionsInsp.routes.js";
 import resolutionsWarrantyRoutes from "./routes/resolutionsWarranty.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import permissionsRoutes from "./routes/permissions.routes.js";
 
 import cors from "cors";
 
@@ -42,11 +43,7 @@ app.use(treadsRoutes);
 app.use(resolutionsInspRoutes);
 app.use(resolutionsWarrantyRoutes);
 app.use(authRoutes);
-
-app.get("/setcookie", (req, res) => {
-  res.cookie("mycookiename1", "mycookievalor1");
-  res.send("hello word");
-});
+app.use(permissionsRoutes);
 
 /* Manejo de rutas que no existen */
 app.use((req, res, next) => {
