@@ -26,7 +26,7 @@ export const verifyPermission = (permisoRequerido) => {
         if (tienePermiso) {
           // Almacenar la información del usuario en el objeto de solicitud para su uso posterior
           req.user = decoded;
-          //console.log("Permiso concedido.");
+
           // Pasar al siguiente middleware o ruta
           next();
         } else {
@@ -37,9 +37,21 @@ export const verifyPermission = (permisoRequerido) => {
             .json({ message: "No tiene permiso para acceder a esta opción" });
         }
       } catch (error) {
-        // Si el token no es válido, responder con un código de estado 401 (No autorizado)
-        //console.log("Token no válido o expirado.");
-        res.status(401).json({ message: "Usuario no autorizado" });
+        // Si el token no es válido, responder deacuerdo a la causa
+
+        if (error.name === "TokenExpiredError") {
+          res
+            .status(401)
+            .json({
+              message: "Tu sesión ha expirado, vuelve a acceder al sistema",
+            });
+        } else if (error.name === "JsonWebTokenError") {
+          res
+            .status(401)
+            .json({ message: "Credenciales de autenticación no validas" });
+        } else {
+          console.log("Error al verificar el token:", error.message);
+        }
       }
     } else {
       // Si no se proporciona la cabecera de autorización, responder con un código de estado 401 (No autorizado)

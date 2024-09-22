@@ -96,7 +96,7 @@ export const createEmployee = async (req, res) => {
       return res.status(400).json({ message: "Este email ya existe" });
     }
 
-    //El empleado no existe, proceder a la incerción
+    //El empleado no existe, proceder a la inserción
 
     //Genera una nueva contraseña segura
 

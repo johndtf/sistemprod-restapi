@@ -17,9 +17,13 @@ router.post(
   getEmployees
 );
 //router.get("/api/employees/:cedula", getEmployee);
-router.post("/api/employees", createEmployee);
+router.post("/api/employees", verifyPermission("empleados"), createEmployee);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
-router.patch("/api/employees/:id", updateEmployee);
+router.patch(
+  "/api/employees/:id",
+  verifyPermission("empleados"),
+  updateEmployee
+);
 //router.delete("/api/employees/:id", deleteEmployee);
 
 export default router;
