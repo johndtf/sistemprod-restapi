@@ -160,4 +160,30 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-// Otros controladores relacionados con la autenticación...
+// ---------------Lógica para validar el token--------------------
+
+export const validateToken = async (req, res) => {
+  // Obtener la cabecera de autorización
+  const headerAuth = req.headers["authorization"];
+
+  // Verificar si la cabecera de autorización está presente y tiene el formato correcto
+  if (headerAuth && headerAuth.startsWith("Bearer ")) {
+    // Extraer el token JWT de la cabecera de autorización
+    const token = headerAuth.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ message: "Token no proporcionado" });
+    }
+
+    try {
+      // Verificar el token
+      const decoded = jwt.verify(token, JWT_SECRET_KEY);
+      return res.status(200).json({ message: "Token válido" });
+    } catch (error) {
+      return res.status(401).json({ message: "Token no válido o expirado" });
+    }
+  } else {
+    // Si no se proporciona la cabecera de autorización, responder con un código de estado 401 (No autorizado)
+    res.status(401).json({ message: "Token de autorización no proporcionado" });
+  }
+};
