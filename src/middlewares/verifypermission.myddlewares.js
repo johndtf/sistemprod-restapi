@@ -7,7 +7,6 @@ export const verifyPermission = (permisoRequerido) => {
   return async (req, res, next) => {
     // Obtener la cabecera de autorización
     const headerAuth = req.headers["authorization"];
-
     // Verificar si la cabecera de autorización está presente y tiene el formato correcto
     if (headerAuth && headerAuth.startsWith("Bearer ")) {
       // Extraer el token JWT de la cabecera de autorización
@@ -40,11 +39,9 @@ export const verifyPermission = (permisoRequerido) => {
         // Si el token no es válido, responder deacuerdo a la causa
 
         if (error.name === "TokenExpiredError") {
-          res
-            .status(401)
-            .json({
-              message: "Tu sesión ha expirado, vuelve a acceder al sistema",
-            });
+          res.status(401).json({
+            message: "Tu sesión ha expirado, vuelve a acceder al sistema",
+          });
         } else if (error.name === "JsonWebTokenError") {
           res
             .status(401)
