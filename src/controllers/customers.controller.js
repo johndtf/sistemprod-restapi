@@ -207,7 +207,7 @@ export const updateData = async (req, res) => {
     // Verificar si el id y eslogan están presentes en el cuerpo de la solicitud
     if (!id || !eslogan) {
       return res.status(400).json({
-        error: "Se requiere el id y el eslogan para la actualización",
+        message: "Se requiere el id y el eslogan para la actualización",
       });
     }
 
@@ -217,7 +217,7 @@ export const updateData = async (req, res) => {
     res.status(200).json({ message: "Registro actualizado exitosamente" });
   } catch (error) {
     console.error("Error en updateData:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 

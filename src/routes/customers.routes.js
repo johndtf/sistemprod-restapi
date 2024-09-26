@@ -11,7 +11,11 @@ import { verifyPermission } from "../middlewares/verifypermission.myddlewares.js
 
 const router = Router();
 
-router.post("/api/customers/customerslist", getCustomers);
+router.post(
+  "/api/customers/customerslist",
+  verifyPermission("clientes"),
+  getCustomers
+);
 router.get("/api/customers/company", getCompany);
 router.patch(
   "/api/customers/updatedata",
@@ -23,9 +27,13 @@ router.get(
   verifyPermission("empresa"),
   getCustomer
 );
-router.post("/api/customers", createCustomer);
+router.post("/api/customers", verifyPermission("clientes"), createCustomer);
 /* se usa patch en lugar de put para poder actualizar algunos datos o todos */
-router.patch("/api/customers/:id", updateCustomer);
+router.patch(
+  "/api/customers/:id",
+  verifyPermission("clientes"),
+  updateCustomer
+);
 //router.delete("/api/customers/:id", deleteCustomer);
 
 export default router;
