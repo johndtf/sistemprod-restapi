@@ -1,6 +1,6 @@
 import { pool } from "../db.js";
 
-//----------Listado de Marcas---------------------------------
+//----------Listado de Marcas por descripción ---------------------------------
 
 export const getBrands = async (req, res) => {
   try {
@@ -14,20 +14,16 @@ export const getBrands = async (req, res) => {
   }
 };
 
-//---------------Buscar Marca por descripción -----------------------
-/* export const getBrand = async (req, res) => {
+//---------------Listado de todas las marcas -----------------------
+export const getListBrands = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM marcas WHERE marca = ?", [
-      req.params.marca,
-    ]);
-    if (rows.length <= 0)
-      return res.status(404).json({ message: "Marca no encontrada" });
-    res.send(rows[0]);
+    const [rows] = await pool.query("SELECT * FROM marcas");
+    res.json(rows);
   } catch (error) {
-    return res.status(500).json({ message: "Something goes wrong" });
+    return res.status(500).json({ message: "Ocurrió un problema obteniendo el listado de marcas" });
   }
 };
- */
+
 //-----------------Crear Marca ---------------------------------
 export const createBrand = async (req, res) => {
   try {

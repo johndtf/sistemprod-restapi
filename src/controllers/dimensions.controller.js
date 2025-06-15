@@ -1,6 +1,6 @@
 import { pool } from "../db.js";
 
-//----------Listado de Dimensiones---------------------------------
+//----------listado de dimensiones por descripción -------------------------------
 
 export const getDimensions = async (req, res) => {
   try {
@@ -15,22 +15,17 @@ export const getDimensions = async (req, res) => {
   }
 };
 
-//---------------Buscar Dimensión por descripcion -----------------------
-/* export const getDimension = async (req, res) => {
+//---------------Listado de dimensiones -----------------------
+export const getListDimensions = async (req, res) => {
   try {
-    const { dimension } = req.body;
-    const [rows] = await pool.query(
-      "SELECT * FROM dimensiones WHERE dimension = ?",
-      [dimension]
-    );
-    ("0p");
-    if (rows.length <= 0)
-      return res.status(404).json({ message: "Dimensión no encontrada" });
-    res.send(rows[0]);
+    const [rows] = await pool.query("SELECT * FROM dimensiones");
+    res.json(rows);
   } catch (error) {
-    return res.status(500).json({ message: "Something goes wrong" });
+    return res
+      .status(500)
+      .json({ message: "Ocurrió un problema obteniendo el listado de dimensiones" });
   }
-}; */
+};
 
 //-----------------Crear Dimensión ---------------------------------
 export const createDimension = async (req, res) => {

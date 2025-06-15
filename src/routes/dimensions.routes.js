@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   getDimensions,
-  // getDimension,
+  getListDimensions,
   createDimension,
   updateDimension,
   //deleteDimension,
@@ -14,7 +14,7 @@ router.post(
   verifyPermission("dimensiones"),
   getDimensions
 );
-//router.post("/api/dimensions/dimension", getDimension);
+router.get("/api/dimensions/dimensionslist", getListDimensions);
 router.post(
   "/api/dimensions",
   verifyPermission("dimensiones"),

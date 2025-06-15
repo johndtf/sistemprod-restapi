@@ -1,7 +1,6 @@
 import { pool } from "../db.js";
 
-//----------Listado de Bandas---------------------------------
-
+//---------------Buscar Banda por descripción -----------------------
 export const getTreads = async (req, res) => {
   try {
     const { banda } = req.body;
@@ -14,19 +13,17 @@ export const getTreads = async (req, res) => {
   }
 };
 
-//---------------Buscar Banda por descripción -----------------------
-/* export const getTread = async (req, res) => {
+//----------Listado de todas las Bandas ---------------------------------
+export const getListTreads = async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM bandas WHERE banda = ?", [
-      req.params.banda,
-    ]);
-    if (rows.length <= 0)
-      return res.status(404).json({ message: "Banda no encontrada" });
-    res.send(rows[0]);
+    const [rows] = await pool.query("SELECT * FROM bandas");
+    res.json(rows);
   } catch (error) {
-    return res.status(500).json({ message: "Something goes wrong" });
+    return res
+      .status(500)
+      .json({ message: "Ocurrió un problema obteniendo el listado de bandas" });
   }
-}; */
+};
 
 //-----------------Crear Banda ---------------------------------
 export const createTread = async (req, res) => {
