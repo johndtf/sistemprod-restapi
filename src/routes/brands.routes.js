@@ -4,17 +4,28 @@ import {
   getListBrands,
   createBrand,
   updateBrand,
-  //deleteBrand,
+  // deleteBrand,
 } from "../controllers/brands.controller.js";
+
 import { verifyPermission } from "../middlewares/verifypermission.myddlewares.js";
 
 const router = Router();
 
-router.post("/api/brands/brandslist", verifyPermission("marcas"), getBrands);
-router.get("/api/brands/brandslist", getListBrands);
-router.post("/api/brands", verifyPermission("marcas"), createBrand);
-/* se usa patch en lugar de put para poder actualizar algunos datos o todos */
-router.patch("/api/brands/:id", verifyPermission("marcas"), updateBrand);
-//router.delete("/api/brands/:id", deleteBrand);
+// Ruta base: /api/brands
+
+// Obtener marcas con filtros (POST)
+router.post("/list", verifyPermission("marcas"), getBrands);
+
+// Obtener listado simple (GET)
+router.get("/list", getListBrands);
+
+// Crear una nueva marca
+router.post("/", verifyPermission("marcas"), createBrand);
+
+// Actualizar una marca
+router.patch("/:id", verifyPermission("marcas"), updateBrand);
+
+// Eliminar marca (en caso de habilitarlo en el futuro)
+// router.delete("/:id", deleteBrand);
 
 export default router;

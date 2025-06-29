@@ -4,21 +4,28 @@ import {
   getProfilesList,
   createProfile,
   updateProfile,
-  //deleteProfile,
+  // deleteProfile,
 } from "../controllers/profiles.controller.js";
+
 import { verifyPermission } from "../middlewares/verifypermission.myddlewares.js";
 
 const router = Router();
 
-router.post(
-  "/api/profiles/profileslist",
-  verifyPermission("perfiles"),
-  getProfiles
-);
-router.get("/api/profiles/list", getProfilesList);
-router.post("/api/profiles", verifyPermission("perfiles"), createProfile);
-/* se usa patch en lugar de put para poder actualizar algunos datos o todos */
-router.patch("/api/profiles/:id", verifyPermission("perfiles"), updateProfile);
-//router.delete("/api/profiles/:id", deleteProfile);
+// Ruta base: /api/profiles
+
+// Buscar perfiles con filtros
+router.post("/list", verifyPermission("perfiles"), getProfiles);
+
+// Obtener lista simple de perfiles (sin filtros)
+router.get("/list", getProfilesList);
+
+// Crear perfil
+router.post("/", verifyPermission("perfiles"), createProfile);
+
+// Actualizar perfil
+router.patch("/:id", verifyPermission("perfiles"), updateProfile);
+
+// Eliminar perfil (opcional, si decides habilitarlo)
+// router.delete("/:id", deleteProfile);
 
 export default router;

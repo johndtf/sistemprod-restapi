@@ -4,29 +4,28 @@ import {
   getResolutionInsp,
   createResolutionInsp,
   updateResolutionInsp,
-  /*  deleteResolutionInsp, */
+  // deleteResolutionInsp,
 } from "../controllers/resolutionsInsp.controller.js";
+
 import { verifyPermission } from "../middlewares/verifypermission.myddlewares.js";
 
 const router = Router();
 
-router.post(
-  "/api/resolutionsInsp/resolutionslist",
-  verifyPermission("rinspeccion"),
-  getResolutionsInsp
-);
-//router.get("/api/resolutionsInsp/:codigo", getResolutionInsp);
-router.post(
-  "/api/resolutionsInsp",
-  verifyPermission("rinspeccion"),
-  createResolutionInsp
-);
-/* se usa patch en lugar de put para poder actualizar algunos datos o todos */
-router.patch(
-  "/api/resolutionsInsp/:id",
-  verifyPermission("rinspeccion"),
-  updateResolutionInsp
-);
-//router.delete("/api/resolutionsInsp/:id", deleteResolutionInsp);
+// Ruta base: /api/resolutionsInsp
+
+// Buscar resoluciones de inspección
+router.post("/list", verifyPermission("rinspeccion"), getResolutionsInsp);
+
+// Obtener una resolución específica por código (opcional)
+// router.get("/:codigo", getResolutionInsp);
+
+// Crear resolución
+router.post("/", verifyPermission("rinspeccion"), createResolutionInsp);
+
+// Actualizar resolución
+router.patch("/:id", verifyPermission("rinspeccion"), updateResolutionInsp);
+
+// Eliminar resolución (si se implementa en el futuro)
+// router.delete("/:id", deleteResolutionInsp);
 
 export default router;

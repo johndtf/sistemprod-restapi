@@ -388,6 +388,31 @@ export const updateCustomer = async (req, res) => {
   }
 };
 
+// ---------------------Buscar clientes para Tom Select---------------------------
+export const searchCustomers = async (req, res) => {
+  try {
+    const query = req.query.query?.trim();
+
+    if (!query) {
+      return res.status(400).json({ message: "Consulta vacía" });
+    }
+
+    const [rows] = await pool.query(
+      `SELECT id_cliente, nombre, cedula_nit, telefono, direccion
+       FROM clientes 
+       WHERE nombre LIKE ? OR cedula_nit LIKE ?
+       ORDER BY nombre ASC
+       LIMIT 20`,
+      [`%${query}%`, `%${query}%`]
+    );
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error("Error en searchCustomers:", error);
+    return res.status(500).json({ message: "Error al buscar clientes" });
+  }
+};
+
 /* ==================================FUNCIONES=============================== */
 
 // ------------Función para validar el formato del correo electrónico--------------

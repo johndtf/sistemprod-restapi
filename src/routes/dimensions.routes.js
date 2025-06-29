@@ -4,28 +4,28 @@ import {
   getListDimensions,
   createDimension,
   updateDimension,
-  //deleteDimension,
+  // deleteDimension,
 } from "../controllers/dimensions.controller.js";
+
 import { verifyPermission } from "../middlewares/verifypermission.myddlewares.js";
+
 const router = Router();
 
-router.post(
-  "/api/dimensions/dimensionslist",
-  verifyPermission("dimensiones"),
-  getDimensions
-);
-router.get("/api/dimensions/dimensionslist", getListDimensions);
-router.post(
-  "/api/dimensions",
-  verifyPermission("dimensiones"),
-  createDimension
-);
-/* se usa patch en lugar de put para poder actualizar algunos datos o todos */
-router.patch(
-  "/api/dimensions/:id",
-  verifyPermission("dimensiones"),
-  updateDimension
-);
-//router.delete("/api/dimensions/:id", deleteDimension);
+// Ruta base: /api/dimensions
+
+// Buscar dimensiones con filtros
+router.post("/list", verifyPermission("dimensiones"), getDimensions);
+
+// Obtener todas las dimensiones (sin filtros)
+router.get("/list", getListDimensions);
+
+// Crear una nueva dimensión
+router.post("/", verifyPermission("dimensiones"), createDimension);
+
+// Actualizar una dimensión existente
+router.patch("/:id", verifyPermission("dimensiones"), updateDimension);
+
+// Eliminar (opcional, comentado)
+// router.delete("/:id", deleteDimension);
 
 export default router;

@@ -1,6 +1,8 @@
 import express from "express";
-//import cookieParser from "cookie-parser";
+// import cookieParser from "cookie-parser";
+import cors from "cors";
 
+// Importar rutas por módulo
 import indexRoutes from "./routes/index.routes.js";
 import profilesRoutes from "./routes/profiles.routes.js";
 import employeesRoutes from "./routes/employees.routes.js";
@@ -13,40 +15,35 @@ import resolutionsWarrantyRoutes from "./routes/resolutionsWarranty.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import permissionsRoutes from "./routes/permissions.routes.js";
 
-import cors from "cors";
-
 const app = express();
 
-// para que entienda la información de tipo json que llega
+// Middleware para parsear JSON
 app.use(express.json());
-//para que pueda mandar y recibir cookies
-//app.use(cookieParser());
 
-// Configurar CORS para permitir el acceso desde múltiples dominios, en este caso desde el servidor local de vscode que levanta con Go Live para desarrollo
-
+// CORS para desarrollo
 const allowedOrigins = ["otradireccion", "http://127.0.0.1:5501"];
 const corsOptions = {
   origin: allowedOrigins,
-  credentials: true, // Permitir el intercambio de cookies
-  optionsSuccessStatus: 200, // Algunos navegadores antiguos pueden requerir esto
+  credentials: true,
+  optionsSuccessStatus: 200,
 };
-
 app.use(cors(corsOptions));
 
-app.use(indexRoutes);
-app.use(profilesRoutes);
-app.use(employeesRoutes);
-app.use(customersRoutes);
-app.use(brandsRoutes);
-app.use(dimensionsRoutes);
-app.use(treadsRoutes);
-app.use(resolutionsInspRoutes);
-app.use(resolutionsWarrantyRoutes);
-app.use(authRoutes);
-app.use(permissionsRoutes);
+// Montar rutas con prefijos REST adecuados
+app.use("/api", indexRoutes); // rutas generales
+app.use("/api/profiles", profilesRoutes);
+app.use("/api/employees", employeesRoutes);
+app.use("/api/customers", customersRoutes);
+app.use("/api/brands", brandsRoutes);
+app.use("/api/dimensions", dimensionsRoutes);
+app.use("/api/treads", treadsRoutes);
+app.use("/api/resolutions-insp", resolutionsInspRoutes);
+app.use("/api/resolutions-warranty", resolutionsWarrantyRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/permissions", permissionsRoutes);
 
-/* Manejo de rutas que no existen */
-app.use((req, res, next) => {
+// Middleware para rutas no encontradas
+app.use((req, res) => {
   res.status(404).json({ message: "Endpoint not found" });
 });
 
