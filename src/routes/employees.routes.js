@@ -14,7 +14,7 @@ const router = Router();
 // Ruta base: /api/employees
 
 // Buscar empleados con filtros
-router.post("/list", verifyPermission("empleados"), getEmployees);
+router.post("/employeeslist", verifyPermission("empleados"), getEmployees);
 
 // Crear nuevo empleado
 router.post("/", verifyPermission("empleados"), createEmployee);

@@ -17,7 +17,7 @@ const router = Router();
 router.post("/list", verifyPermission("disenios"), getTreads);
 
 // Listado general de diseños (sin filtros)
-router.get("/list", getListTreads);
+router.get("/treadlist", getListTreads);
 
 // Crear nuevo diseño
 router.post("/", verifyPermission("disenios"), createTread);

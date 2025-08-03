@@ -17,7 +17,7 @@ const router = Router();
 router.post("/list", verifyPermission("marcas"), getBrands);
 
 // Obtener listado simple (GET)
-router.get("/list", getListBrands);
+router.get("/brandslist", getListBrands);
 
 // Crear una nueva marca
 router.post("/", verifyPermission("marcas"), createBrand);

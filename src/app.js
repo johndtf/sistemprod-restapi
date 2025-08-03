@@ -14,6 +14,7 @@ import resolutionsInspRoutes from "./routes/resolutionsInsp.routes.js";
 import resolutionsWarrantyRoutes from "./routes/resolutionsWarranty.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import permissionsRoutes from "./routes/permissions.routes.js";
+import ordersRoutes from "./routes/orders.routes.js";
 
 const app = express();
 
@@ -29,7 +30,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Montar rutas con prefijos REST adecuados
+// Montar rutas con prefijos REST
 app.use("/api", indexRoutes); // rutas generales
 app.use("/api/profiles", profilesRoutes);
 app.use("/api/employees", employeesRoutes);
@@ -41,6 +42,7 @@ app.use("/api/resolutions-insp", resolutionsInspRoutes);
 app.use("/api/resolutions-warranty", resolutionsWarrantyRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/permissions", permissionsRoutes);
+app.use("/api/orders", ordersRoutes);
 
 // Middleware para rutas no encontradas
 app.use((req, res) => {

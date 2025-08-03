@@ -17,7 +17,7 @@ const router = Router();
 router.post("/list", verifyPermission("dimensiones"), getDimensions);
 
 // Obtener todas las dimensiones (sin filtros)
-router.get("/list", getListDimensions);
+router.get("/dimensionslist", getListDimensions);
 
 // Crear una nueva dimensión
 router.post("/", verifyPermission("dimensiones"), createDimension);
