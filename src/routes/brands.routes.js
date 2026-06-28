@@ -14,7 +14,7 @@ const router = Router();
 // Ruta base: /api/brands
 
 // Obtener marcas con filtros (POST)
-router.post("/list", verifyPermission("marcas"), getBrands);
+router.post("/search", verifyPermission("marcas"), getBrands);
 
 // Obtener listado simple (GET)
 router.get("/brandslist", getListBrands);

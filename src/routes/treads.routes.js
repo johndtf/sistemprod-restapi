@@ -14,7 +14,7 @@ const router = Router();
 // Ruta base: /api/treads
 
 // Buscar diseños con filtros
-router.post("/list", verifyPermission("disenios"), getTreads);
+router.post("/search", verifyPermission("disenios"), getTreads);
 
 // Listado general de diseños (sin filtros)
 router.get("/treadlist", getListTreads);

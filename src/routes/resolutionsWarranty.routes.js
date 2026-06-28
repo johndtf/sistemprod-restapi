@@ -13,7 +13,7 @@ const router = Router();
 // Ruta base: /api/resolutionsWarranty
 
 // Buscar resoluciones de garantía
-router.post("/list", verifyPermission("rgarantia"), getResolutionsWarranty);
+router.post("/search", verifyPermission("rgarantia"), getResolutionsWarranty);
 
 // Crear nueva resolución de garantía
 router.post("/", verifyPermission("rgarantia"), createResolutionWarranty);

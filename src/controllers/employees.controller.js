@@ -58,7 +58,7 @@ export const createEmployee = async (req, res) => {
 
     // Validar dirección
     const isDireccionValid = direccion.match(
-      /^[a-zA-Z0-9\s.,#áéíóúÁÉÍÓÚñÑ-]{10,100}$/
+      /^[a-zA-Z0-9\s.,#áéíóúÁÉÍÓÚñÑ-]{10,100}$/,
     );
     if (!isDireccionValid) {
       return res.status(400).json({
@@ -77,7 +77,7 @@ export const createEmployee = async (req, res) => {
     //Verificar si la cédula ya existe
     const [existingIdentification] = await pool.query(
       "SELECT id_empleado FROM empleados WHERE cedula = ?",
-      [cedula]
+      [cedula],
     );
 
     if (existingIdentification.length > 0) {
@@ -88,7 +88,7 @@ export const createEmployee = async (req, res) => {
     //Verificar si el emal ya existe
     const [existingEmail] = await pool.query(
       "SELECT id_empleado FROM empleados WHERE email = ?",
-      [email]
+      [email],
     );
 
     if (existingEmail.length > 0) {
@@ -129,7 +129,7 @@ export const createEmployee = async (req, res) => {
         hashedPassword,
         estado,
         temporal,
-      ]
+      ],
     );
 
     res.send({
@@ -159,7 +159,7 @@ export const getEmployees = async (req, res) => {
         "FROM empleados AS emp " +
         "INNER JOIN perfiles AS perf ON emp.id_perfil = perf.id_perfil " +
         "WHERE emp.nombre LIKE ? AND emp.apellido LIKE ? AND emp.cedula LIKE ?",
-      [`%${nombre}%`, `%${apellido}%`, `%${cedula}%`]
+      [`%${nombre}%`, `%${apellido}%`, `%${cedula}%`],
     );
     res.json(rows);
   } catch (error) {
@@ -183,6 +183,23 @@ export const getEmployees = async (req, res) => {
     return res.status(500).json({ message: "Something goes wrong" });
   }
 }; */
+
+//------------------------ Obtener Empleado por ID ----------------
+
+export const getEmployeeByCode = async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT id_empleado, nombre FROM empleados WHERE id_empleado = ? AND estado = 'A'",
+      [req.params.id],
+    );
+    if (rows.length <= 0)
+      return res.status(404).json({ message: "Empleado no encontrado" });
+    res.send(rows[0]);
+  } catch (error) {
+    console.error("Error en getEmployeeByCode:", error);
+    return res.status(500).json({ message: "Error al consultar empleado" });
+  }
+};
 
 //-------------------Modificar Empleado -----------------------------------
 
@@ -252,7 +269,7 @@ export const updateEmployee = async (req, res) => {
 
     // Validar dirección
     const isDireccionValid = direccion.match(
-      /^[a-zA-Z0-9\s.,#áéíóúÁÉÍÓÚñÑ-]{10,100}$/
+      /^[a-zA-Z0-9\s.,#áéíóúÁÉÍÓÚñÑ-]{10,100}$/,
     );
     if (!isDireccionValid) {
       return res.status(400).json({
@@ -282,7 +299,7 @@ export const updateEmployee = async (req, res) => {
     // Verificar si el empleado existe
     const [existingEmployee] = await pool.query(
       "SELECT * FROM empleados WHERE id_empleado = ?",
-      [id]
+      [id],
     );
 
     if (existingEmployee.length === 0) {
@@ -293,7 +310,7 @@ export const updateEmployee = async (req, res) => {
     //Verificar que la nueva Cédula no esté siendo usada por otro empleado
     const [existingCedula] = await pool.query(
       "SELECT id_empleado FROM empleados WHERE cedula = ? AND id_empleado != ?",
-      [cedula, id]
+      [cedula, id],
     );
     //Si la cédula está siendo usada por otro empleado genera mensaje de error
     if (existingCedula.length > 0) {
@@ -305,7 +322,7 @@ export const updateEmployee = async (req, res) => {
     //Verificar si el emal no está siendo usado por otro empleado
     const [existingEmail] = await pool.query(
       "SELECT id_empleado FROM empleados WHERE email = ? AND id_empleado != ?",
-      [email, id]
+      [email, id],
     );
 
     if (existingEmail.length > 0) {

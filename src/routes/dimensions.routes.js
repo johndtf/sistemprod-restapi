@@ -14,7 +14,7 @@ const router = Router();
 // Ruta base: /api/dimensions
 
 // Buscar dimensiones con filtros
-router.post("/list", verifyPermission("dimensiones"), getDimensions);
+router.post("/search", verifyPermission("dimensiones"), getDimensions);
 
 // Obtener todas las dimensiones (sin filtros)
 router.get("/dimensionslist", getListDimensions);

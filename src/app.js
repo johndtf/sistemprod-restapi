@@ -15,6 +15,8 @@ import resolutionsWarrantyRoutes from "./routes/resolutionsWarranty.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import permissionsRoutes from "./routes/permissions.routes.js";
 import ordersRoutes from "./routes/orders.routes.js";
+import initialInspectionRoutes from "./routes/initialInspection.routes.js";
+import tiresRoutes from "./routes/tires.routes.js";
 
 const app = express();
 
@@ -38,11 +40,13 @@ app.use("/api/customers", customersRoutes);
 app.use("/api/brands", brandsRoutes);
 app.use("/api/dimensions", dimensionsRoutes);
 app.use("/api/treads", treadsRoutes);
-app.use("/api/resolutions-insp", resolutionsInspRoutes);
-app.use("/api/resolutions-warranty", resolutionsWarrantyRoutes);
+app.use("/api/resolutionsInsp", resolutionsInspRoutes);
+app.use("/api/resolutionsWarranty", resolutionsWarrantyRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/permissions", permissionsRoutes);
+app.use("/api/permisos", permissionsRoutes);
 app.use("/api/orders", ordersRoutes);
+app.use("/api/initialInspection", initialInspectionRoutes);
+app.use("/api/tires", tiresRoutes);
 
 // Middleware para rutas no encontradas
 app.use((req, res) => {

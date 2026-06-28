@@ -1,3 +1,4 @@
+//controllers/resolutionsInsp.controller.js
 import { pool } from "../db.js";
 
 //----------Listado de Resoluciones de inspección---------------------------------
@@ -87,9 +88,9 @@ export const updateResolutionInsp = async (req, res) => {
     const { id } = req.params;
     const { resol_inspec, codigo } = req.body;
 
-    //Verificar que no se intente modificar los códigos 1 y 2 "PENDIENTE" y "APTA"
+    //Verificar que no se intente modificar los códigos 0 y 1 "PENDIENTE" y "APTA"
 
-    if (id <= 2) {
+    if (id <= 1) {
       //Se está intentando modificar las resoluciones Pendiente o Apta
       return res.status(400).json({
         message:

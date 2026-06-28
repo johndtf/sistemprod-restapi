@@ -13,8 +13,11 @@ const router = Router();
 
 // Ruta base: /api/resolutionsInsp
 
-// Buscar resoluciones de inspección
-router.post("/list", verifyPermission("rinspeccion"), getResolutionsInsp);
+// Buscar resoluciones de inspección con filtros
+router.post("/search", verifyPermission("rinspeccion"), getResolutionInsp);
+
+// Obtener todas las resoluciones de inspección
+router.get("/list", verifyPermission("rinspeccion"), getResolutionsInsp);
 
 // Obtener una resolución específica por código (opcional)
 // router.get("/:codigo", getResolutionInsp);

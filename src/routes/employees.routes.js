@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   getEmployees,
-  // getEmployee,
+  getEmployeeByCode,
   createEmployee,
   updateEmployee,
   // deleteEmployee,
@@ -21,6 +21,9 @@ router.post("/", verifyPermission("empleados"), createEmployee);
 
 // Actualizar empleado
 router.patch("/:id", verifyPermission("empleados"), updateEmployee);
+
+// Obtener empleado por ID
+router.get("/code/:id", verifyPermission("empleados"), getEmployeeByCode);
 
 // Obtener empleado por cédula (si se activa en el futuro)
 // router.get("/:cedula", getEmployee);

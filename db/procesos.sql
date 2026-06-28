@@ -1,0 +1,21 @@
+CREATE TABLE `procesos` (
+  `id_proceso` int unsigned NOT NULL AUTO_INCREMENT,
+  `id_llanta` int unsigned NOT NULL,
+  `id_subproceso` int unsigned NOT NULL,
+  `fecha` datetime DEFAULT NULL,
+  `fecha_registro` datetime DEFAULT NULL,
+  `observacion` text,
+  `id_resolucion` smallint unsigned NOT NULL DEFAULT '0',
+  `reproceso` tinyint unsigned DEFAULT '0',
+  `id_operario` int DEFAULT NULL,
+  `id_estado_resultado` int DEFAULT NULL,
+  `nivel_reenc` tinyint unsigned DEFAULT NULL,
+  PRIMARY KEY (`id_proceso`),
+  KEY `idx_llanta` (`id_llanta`),
+  KEY `idx_subproceso` (`id_subproceso`),
+  KEY `idx_reproceso` (`reproceso`),
+  KEY `fk_procesos_estado_resultado` (`id_estado_resultado`),
+  CONSTRAINT `fk_procesos_estado_resultado` FOREIGN KEY (`id_estado_resultado`) REFERENCES `estados_llanta` (`id_estado`),
+  CONSTRAINT `fk_procesos_llantas` FOREIGN KEY (`id_llanta`) REFERENCES `llantas` (`id_llanta`),
+  CONSTRAINT `fk_procesos_subprocesos` FOREIGN KEY (`id_subproceso`) REFERENCES `subprocesos` (`id_subproceso`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb3
