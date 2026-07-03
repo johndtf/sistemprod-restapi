@@ -1,6 +1,10 @@
 // controllers/initialInspection.controller.js
 import { pool } from "../db.js";
 
+const getInitialInspectionState = (inspectionCode) => {
+  return inspectionCode === 1 ? 1 : 2;
+};
+
 // =========Actualizar inspección inicial=============
 export const updateInitialInspection = async (req, res) => {
   const { tiquete } = req.params; // es id_llanta
@@ -12,7 +16,6 @@ export const updateInitialInspection = async (req, res) => {
     fecha_inspeccion_inicial,
   } = req.body;
 
-  // Parsear valores numéricos
   const ticket = Number(tiquete);
   const nivel = Number(nivel_reenc);
   const codigo = Number(id_inspec);
@@ -23,7 +26,7 @@ export const updateInitialInspection = async (req, res) => {
     !Number.isInteger(ticket) ||
     ticket <= 0 ||
     !Number.isInteger(codigo) ||
-    codigo <= 0 || // puede ser  1 o >=2
+    codigo <= 0 ||
     !Number.isInteger(inspector) ||
     inspector <= 0 ||
     !Number.isInteger(nivel) ||
@@ -32,7 +35,6 @@ export const updateInitialInspection = async (req, res) => {
     return res.status(400).json({ message: "Datos inválidos o incompletos" });
   }
 
-  // Validar fecha de inspección inicial
   if (!fecha_inspeccion_inicial) {
     return res.status(400).json({
       message: "Debe indicar la fecha y hora de inspección",
@@ -51,14 +53,7 @@ export const updateInitialInspection = async (req, res) => {
   }
   observaciones_inicial = observaciones_inicial?.trim() || null;
 
-  // Determinar estado según el código de inspección
-  let estado;
-
-  if (codigo === 1)
-    estado = 1; // APTA
-  else estado = 2; // RECHAZADA
-
-  // Establecer fecha y hora del registro de la inspección inicial
+  const estado = getInitialInspectionState(codigo);
   const fechaRegistro = new Date();
   const subproceso = 1; // Inspección inicial
 
@@ -66,6 +61,11 @@ export const updateInitialInspection = async (req, res) => {
 
   try {
     await connection.beginTransaction();
+
+    const abortTransaction = async (status, message) => {
+      await connection.rollback();
+      return res.status(status).json({ message });
+    };
 
     // Validar empleado inspector
     const [empleados] = await connection.query(
@@ -76,24 +76,20 @@ export const updateInitialInspection = async (req, res) => {
     );
 
     if (empleados.length === 0) {
-      return res.status(400).json({
-        message: "Empleado no encontrado",
-      });
+      return abortTransaction(400, "Empleado no encontrado");
     }
 
     if (empleados[0].estado !== "A") {
-      return res.status(400).json({
-        message: "El empleado no se encuentra activo",
-      });
+      return abortTransaction(400, "El empleado no se encuentra activo");
     }
 
     // Ejecutar actualización en llantas
     const [result] = await connection.query(
       `UPDATE llantas
-       SET nivel_reenc = ?, 
-           id_inspec = ?, 
-           observaciones_inicial = ?, 
-           id_inspector_inicial = ?, 
+       SET nivel_reenc = ?,
+           id_inspec = ?,
+           observaciones_inicial = ?,
+           id_inspector_inicial = ?,
            fecha_inspeccion_inicial = ?,
            fecha_registro_inspinicial = ?,
            id_estado = ?
@@ -111,12 +107,10 @@ export const updateInitialInspection = async (req, res) => {
     );
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Llanta no encontrada" });
+      return abortTransaction(404, "Llanta no encontrada");
     }
 
-    // Insertar registro en procesos
-
-    //Contultar si es reproceso
+    // Consultar si es reproceso
     const [rows] = await connection.query(
       `SELECT COUNT(*) AS veces
       FROM procesos
@@ -177,12 +171,15 @@ export const undoInitialInspection = async (req, res) => {
   try {
     await connection.beginTransaction();
 
+    const abortTransaction = async (status, message) => {
+      await connection.rollback();
+      return res.status(status).json({ message });
+    };
+
     const ticket = Number(req.params.tiquete);
 
     if (!Number.isInteger(ticket) || ticket <= 0) {
-      return res.status(400).json({
-        message: "Tiquete inválido",
-      });
+      return abortTransaction(400, "Tiquete inválido");
     }
 
     // Verificar si la llanta tiene inspección inicial registrada
@@ -194,9 +191,10 @@ export const undoInitialInspection = async (req, res) => {
     );
 
     if (tieneinspeccion[0].total === 0) {
-      return res.status(404).json({
-        message: "La llanta no tiene una inspección inicial registrada",
-      });
+      return abortTransaction(
+        404,
+        "La llanta no tiene una inspección inicial registrada",
+      );
     }
 
     // Verificar procesos posteriores
@@ -209,10 +207,10 @@ export const undoInitialInspection = async (req, res) => {
     );
 
     if (posteriores[0].total > 0) {
-      return res.status(400).json({
-        message:
-          "No es posible deshacer la inspección inicial porque existen procesos posteriores registrados.",
-      });
+      return abortTransaction(
+        400,
+        "No es posible deshacer la inspección inicial porque existen procesos posteriores registrados.",
+      );
     }
 
     // Restaurar llanta
@@ -230,9 +228,7 @@ export const undoInitialInspection = async (req, res) => {
     );
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({
-        message: "Llanta no encontrada",
-      });
+      return abortTransaction(404, "Llanta no encontrada");
     }
 
     // Eliminar registros de inspección inicial
