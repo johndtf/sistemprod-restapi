@@ -28,45 +28,18 @@ export const getTireByTicket = async (req, res) => {
       return res.status(404).json({ message: "Tire not found" });
     }
 
-    res.json(rows[0]);
+    const tire = rows[0];
+    const [subprocesos] = await pool.query(
+      "SELECT DISTINCT id_subproceso FROM procesos WHERE id_llanta = ? ORDER BY id_subproceso",
+      [tire.id_llanta],
+    );
+
+    res.json({
+      ...tire,
+      subprocesos: subprocesos.map(({ id_subproceso }) => id_subproceso),
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error fetching tire" });
   }
 };
-
-// Actualizar llanta inspección inicial
-/* export const updateTire = async (req, res) => {
-  const { idTire } = req.params;
-  const { nivel_reenc, observacion, codigo_inspeccion, prioridad, id_estado } =
-    req.body;
-
-  try {
-    const [result] = await pool.query(
-      `UPDATE llantas 
-       SET nivel_reenc = IFNULL(?, nivel_reenc),
-           observacion = IFNULL(?, observacion),
-           codigo_inspeccion = IFNULL(?, codigo_inspeccion),
-           prioridad = IFNULL(?, prioridad),
-           id_estado = IFNULL(?, id_estado)
-       WHERE id_llanta = ?`,
-      [
-        nivel_reenc,
-        observacion,
-        codigo_inspeccion,
-        prioridad,
-        id_estado,
-        idTire,
-      ]
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Tire not found" });
-    }
-
-    res.json({ message: "Tire updated successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error updating tire" });
-  }
-}; */
