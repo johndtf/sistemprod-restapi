@@ -19,6 +19,8 @@ import initialInspectionRoutes from "./routes/initialInspection.routes.js";
 import tiresRoutes from "./routes/tires.routes.js";
 import scrapingRoutes from "./routes/scraping.routes.js";
 import preparationRoutes from "./routes/preparation.routes.js";
+import repairsCatalogRoutes from "./routes/repairsCatalog.routes.js";
+import repairRoutes from "./routes/repair.routes.js";
 
 const app = express();
 
@@ -51,6 +53,8 @@ app.use("/api/initialInspection", initialInspectionRoutes);
 app.use("/api/tires", tiresRoutes);
 app.use("/api/scraping", scrapingRoutes);
 app.use("/api/preparation", preparationRoutes);
+app.use("/api/repairs", repairsCatalogRoutes);
+app.use("/api/repair", repairRoutes);
 
 // Middleware para rutas no encontradas
 app.use((req, res) => {

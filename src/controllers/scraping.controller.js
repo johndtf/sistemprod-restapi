@@ -167,7 +167,10 @@ export const getScrapingTire = async (req, res) => {
               e.descripcion AS estado,
               CONCAT(o.numero_orden, ' - ', LPAD(l.consec_orden, 2, '0')) AS orden,
               TRIM(CONCAT(c.nombre, ' ', COALESCE(c.apellido, ''))) AS cliente,
-              m.marca, d.dimension, b.banda AS diseno
+              m.marca, d.dimension, b.banda AS diseno,
+              CASE WHEN er.id_empleado IS NULL THEN NULL
+                   ELSE TRIM(CONCAT(er.id_empleado, ' - ', er.nombre, ' ', COALESCE(er.apellido, '')))
+              END AS ultimo_operario
        FROM llantas l
        JOIN ordenes o ON l.id_orden = o.id_orden
        JOIN clientes c ON o.id_cliente = c.id_cliente
@@ -175,6 +178,7 @@ export const getScrapingTire = async (req, res) => {
        LEFT JOIN marcas m ON l.id_marca = m.id_marca
        LEFT JOIN dimensiones d ON l.id_dimension = d.id_dimension
        LEFT JOIN bandas b ON l.id_banda = b.id_banda
+       LEFT JOIN empleados er ON l.id_operario_raspado = er.id_empleado
        WHERE l.id_llanta = ?`,
       [ticket],
     );

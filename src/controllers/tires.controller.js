@@ -12,7 +12,10 @@ export const getTireByTicket = async (req, res) => {
               l.nivel_reenc, l.observaciones_inicial, ri.resol_inspec,
               CONCAT(o.numero_orden, ' - ', LPAD(l.consec_orden, 2, '0')) AS orden,
               c.nombre AS cliente_nombre, c.apellido AS cliente_apellido,
-              m.marca AS marca, d.dimension AS dimension, b.banda AS diseno
+              m.marca AS marca, d.dimension AS dimension, b.banda AS diseno,
+              CASE WHEN ei.id_empleado IS NULL THEN NULL
+                   ELSE TRIM(CONCAT(ei.id_empleado, ' - ', ei.nombre, ' ', COALESCE(ei.apellido, '')))
+              END AS ultimo_operario
        FROM llantas l
        JOIN ordenes o ON l.id_orden = o.id_orden
        JOIN clientes c ON o.id_cliente = c.id_cliente
@@ -21,6 +24,7 @@ export const getTireByTicket = async (req, res) => {
        LEFT JOIN bandas b ON l.id_banda = b.id_banda
        LEFT JOIN estados_llanta e ON l.id_estado = e.id_estado
        LEFT JOIN resoluciones_i ri ON l.id_inspec = ri.id_inspec
+       LEFT JOIN empleados ei ON l.id_inspector_inicial = ei.id_empleado
        WHERE l.id_llanta = ? OR l.consec_orden = ?`,
       [ticket, ticket],
     );

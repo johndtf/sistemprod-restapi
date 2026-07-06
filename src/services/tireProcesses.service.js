@@ -1,6 +1,6 @@
 // ==================== HISTORIAL COMUN DE SUBPROCESOS ====================
 // Esta consulta pertenece al historial de la llanta y no a un formulario en
-// particular. Centralizarla permite que Inspeccion, Raspado y Preparacion
+// particular. Centralizarla permite que los subrpocesos completados se puedan consultar desde cualquier formulario y que
 // muestren exactamente los mismos indicadores en el menu lateral.
 export const getCompletedSubprocessIds = async (connection, tireId) => {
   const [rows] = await connection.query(
