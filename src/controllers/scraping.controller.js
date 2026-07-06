@@ -1,4 +1,5 @@
 import { pool } from "../db.js";
+import { getCompletedSubprocessIds } from "../services/tireProcesses.service.js";
 
 // ==================== CONSTANTES DEL SUBPROCESO ====================
 // Estos identificadores provienen de los catálogos subprocesos,
@@ -185,7 +186,13 @@ export const getScrapingTire = async (req, res) => {
       [ticket, SCRAPING_SUBPROCESS_ID],
     );
 
-    res.json({ ...rows[0], raspados_registrados: history[0].total });
+    const subprocesos = await getCompletedSubprocessIds(pool, ticket);
+
+    res.json({
+      ...rows[0],
+      raspados_registrados: history[0].total,
+      subprocesos,
+    });
   } catch (error) {
     console.error("Error en getScrapingTire:", error);
     res.status(500).json({ message: "No se pudo consultar la llanta" });

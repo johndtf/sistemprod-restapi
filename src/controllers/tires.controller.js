@@ -1,4 +1,5 @@
 import { pool } from "../db.js";
+import { getCompletedSubprocessIds } from "../services/tireProcesses.service.js";
 
 // Buscar llanta por tiquete
 export const getTireByTicket = async (req, res) => {
@@ -29,14 +30,11 @@ export const getTireByTicket = async (req, res) => {
     }
 
     const tire = rows[0];
-    const [subprocesos] = await pool.query(
-      "SELECT DISTINCT id_subproceso FROM procesos WHERE id_llanta = ? ORDER BY id_subproceso",
-      [tire.id_llanta],
-    );
+    const subprocesos = await getCompletedSubprocessIds(pool, tire.id_llanta);
 
     res.json({
       ...tire,
-      subprocesos: subprocesos.map(({ id_subproceso }) => id_subproceso),
+      subprocesos,
     });
   } catch (error) {
     console.error(error);

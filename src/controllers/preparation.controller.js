@@ -1,4 +1,5 @@
 import { pool } from "../db.js";
+import { getCompletedSubprocessIds } from "../services/tireProcesses.service.js";
 
 // ==================== CONSTANTES DEL SUBPROCESO ====================
 // Los identificadores corresponden a los catalogos subprocesos,
@@ -157,7 +158,13 @@ export const getPreparationTire = async (req, res) => {
       [ticket, PREPARATION_SUBPROCESS_ID],
     );
 
-    res.json({ ...rows[0], preparaciones_registradas: history[0].total });
+    const subprocesos = await getCompletedSubprocessIds(pool, ticket);
+
+    res.json({
+      ...rows[0],
+      preparaciones_registradas: history[0].total,
+      subprocesos,
+    });
   } catch (error) {
     console.error("Error en getPreparationTire:", error);
     res.status(500).json({ message: "No se pudo consultar la llanta" });
