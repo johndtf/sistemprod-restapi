@@ -5,6 +5,25 @@ const getInitialInspectionState = (inspectionCode) => {
   return inspectionCode === 1 ? 1 : 2;
 };
 
+// =========Listar operarios activos para Inspección Inicial=============
+// El formulario necesita buscar por código o nombre sin exigir al usuario
+// permisos administrativos sobre el módulo de empleados.
+export const getActiveInitialInspectionOperators = async (_req, res) => {
+  try {
+    const [operators] = await pool.query(
+      `SELECT id_empleado, nombre, apellido
+       FROM empleados
+       WHERE estado = 'A'
+       ORDER BY nombre, apellido`,
+    );
+
+    res.json(operators);
+  } catch (error) {
+    console.error("Error en getActiveInitialInspectionOperators:", error);
+    res.status(500).json({ message: "No se pudieron consultar los operarios" });
+  }
+};
+
 // =========Actualizar inspección inicial=============
 export const updateInitialInspection = async (req, res) => {
   const { tiquete } = req.params; // es id_llanta

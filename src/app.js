@@ -17,6 +17,7 @@ import permissionsRoutes from "./routes/permissions.routes.js";
 import ordersRoutes from "./routes/orders.routes.js";
 import initialInspectionRoutes from "./routes/initialInspection.routes.js";
 import tiresRoutes from "./routes/tires.routes.js";
+import scrapingRoutes from "./routes/scraping.routes.js";
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use("/api/permisos", permissionsRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/initialInspection", initialInspectionRoutes);
 app.use("/api/tires", tiresRoutes);
+app.use("/api/scraping", scrapingRoutes);
 
 // Middleware para rutas no encontradas
 app.use((req, res) => {
