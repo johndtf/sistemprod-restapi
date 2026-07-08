@@ -2,6 +2,7 @@
 import { Router } from "express";
 import {
   getActiveInitialInspectionOperators,
+  getInitialInspectionResolutions,
   updateInitialInspection,
   undoInitialInspection,
 } from "../controllers/initialInspection.controller.js";
@@ -18,6 +19,13 @@ router.get(
 );
 
 // Registrar inspección inicial
+
+// Lista de resoluciones disponibles para registrar la inspeccion inicial.
+router.get(
+  "/resolutions",
+  verifyPermission("inspeccioni"),
+  getInitialInspectionResolutions,
+);
 
 router.patch(
   "/:tiquete",

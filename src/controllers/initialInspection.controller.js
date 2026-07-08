@@ -24,6 +24,28 @@ export const getActiveInitialInspectionOperators = async (_req, res) => {
   }
 };
 
+// =========Listar resoluciones disponibles para Inspeccion Inicial=============
+// El operario de inspeccion necesita elegir una resolucion para registrar el
+// proceso, pero no necesariamente debe administrar el catalogo de resoluciones.
+// Por eso esta consulta se expone desde el modulo productivo y usa el permiso
+// "inspeccioni" definido en la ruta, no el permiso administrativo "rinspeccion".
+export const getInitialInspectionResolutions = async (_req, res) => {
+  try {
+    const [resolutions] = await pool.query(
+      `SELECT id_inspec, resol_inspec, codigo
+       FROM resoluciones_i
+       ORDER BY id_inspec`,
+    );
+
+    res.json(resolutions);
+  } catch (error) {
+    console.error("Error en getInitialInspectionResolutions:", error);
+    res.status(500).json({
+      message: "No se pudieron consultar las resoluciones de inspeccion",
+    });
+  }
+};
+
 // =========Actualizar inspección inicial=============
 export const updateInitialInspection = async (req, res) => {
   const { tiquete } = req.params; // es id_llanta
