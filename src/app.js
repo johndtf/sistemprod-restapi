@@ -23,6 +23,7 @@ import repairsCatalogRoutes from "./routes/repairsCatalog.routes.js";
 import repairRoutes from "./routes/repair.routes.js";
 import fillingRoutes from "./routes/filling.routes.js";
 import plantParametersRoutes from "./routes/plantParameters.routes.js";
+import treadCutRoutes from "./routes/treadCut.routes.js";
 
 const app = express();
 
@@ -59,6 +60,7 @@ app.use("/api/repairs", repairsCatalogRoutes);
 app.use("/api/repair", repairRoutes);
 app.use("/api/filling", fillingRoutes);
 app.use("/api/plant-parameters", plantParametersRoutes);
+app.use("/api/tread-cut", treadCutRoutes);
 
 // Middleware para rutas no encontradas
 app.use((req, res) => {
