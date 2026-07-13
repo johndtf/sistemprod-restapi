@@ -27,6 +27,7 @@ import treadCutRoutes from "./routes/treadCut.routes.js";
 import bandingRoutes from "./routes/banding.routes.js";
 import vulcanizationRoutes from "./routes/vulcanization.routes.js";
 import finalInspectionRoutes from "./routes/finalInspection.routes.js";
+import terminationRoutes from "./routes/termination.routes.js";
 
 const app = express();
 
@@ -67,6 +68,7 @@ app.use("/api/tread-cut", treadCutRoutes);
 app.use("/api/banding", bandingRoutes);
 app.use("/api/vulcanization", vulcanizationRoutes);
 app.use("/api/final-inspection", finalInspectionRoutes);
+app.use("/api/termination", terminationRoutes);
 
 // Middleware para rutas no encontradas
 app.use((req, res) => {
