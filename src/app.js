@@ -29,6 +29,8 @@ import vulcanizationRoutes from "./routes/vulcanization.routes.js";
 import finalInspectionRoutes from "./routes/finalInspection.routes.js";
 import terminationRoutes from "./routes/termination.routes.js";
 import treadWeightsRoutes from "./routes/treadWeights.routes.js";
+import processedOutputsRoutes from "./routes/processedOutputs.routes.js";
+import warehousesRoutes from "./routes/warehouses.routes.js";
 
 const app = express();
 
@@ -71,6 +73,10 @@ app.use("/api/vulcanization", vulcanizationRoutes);
 app.use("/api/final-inspection", finalInspectionRoutes);
 app.use("/api/termination", terminationRoutes);
 app.use("/api/tread-weights", treadWeightsRoutes);
+// Catalogos y salidas se mantienen separados: Bodegas puede administrarse sin
+// conceder permiso para mover llantas fuera de planta.
+app.use("/api/processed-outputs", processedOutputsRoutes);
+app.use("/api/warehouses", warehousesRoutes);
 
 // Middleware para rutas no encontradas
 app.use((req, res) => {
