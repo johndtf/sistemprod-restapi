@@ -19,6 +19,17 @@ const FINAL_RESULTS = {
   reencauchada: RETREADED_STATE_ID,
 };
 
+// El tipo de ingreso define el producto que puede obtenerse al aprobar la
+// inspeccion final. Una llanta que entro para reparacion no debe terminar como
+// reencauchada y una que entro para reencauche (incluida la comprada como casco)
+// no debe terminar como reparada. La validacion se mantiene en el servidor para
+// proteger la regla aun si alguien modifica el formulario desde el navegador.
+const EXPECTED_FINAL_RESULT_BY_ENTRY_TYPE = {
+  REPARACION: "reparada",
+  REENCAUCHE: "reencauchada",
+  VENTA_CASCO: "reencauchada",
+};
+
 // ==================== NORMALIZACION ====================
 const parsePositiveInteger = (value) => {
   const number = Number(value);
@@ -52,7 +63,7 @@ const hasTermination = async (connection, ticket) => {
 
 const validateEligibleTire = async (connection, ticket, lock = false) => {
   const [tires] = await connection.query(
-    `SELECT id_llanta, id_estado, nivel_reenc
+    `SELECT id_llanta, id_estado, nivel_reenc, tipo_ingreso
      FROM llantas
      WHERE id_llanta = ?${lock ? " FOR UPDATE" : ""}`,
     [ticket],
@@ -177,7 +188,7 @@ export const getFinalInspectionTire = async (req, res) => {
     }
 
     const [rows] = await pool.query(
-      `SELECT l.id_llanta, l.serie, l.nivel_reenc,
+      `SELECT l.id_llanta, l.serie, l.nivel_reenc, l.tipo_ingreso,
               e.descripcion AS estado,
               CONCAT(o.numero_orden, ' - ', LPAD(l.consec_orden, 2, '0')) AS orden,
               TRIM(CONCAT(c.nombre, ' ', COALESCE(c.apellido, ''))) AS cliente,
@@ -247,6 +258,22 @@ const registerFinalInspectionResult = async ({
 
     const eligibility = await validateEligibleTire(connection, ticket, true);
     if (eligibility.message) return abort(eligibility.status, eligibility.message);
+
+    // Solo los resultados aprobados necesitan comparar el tipo de ingreso. Un
+    // rechazo conserva su propio flujo y puede registrarse para cualquier tipo.
+    if (resultStateId !== REJECTED_STATE_ID) {
+      const expectedResult = EXPECTED_FINAL_RESULT_BY_ENTRY_TYPE[eligibility.tire.tipo_ingreso];
+      const receivedResult = Object.entries(FINAL_RESULTS).find(
+        ([, stateId]) => stateId === resultStateId,
+      )?.[0];
+
+      if (!expectedResult || receivedResult !== expectedResult) {
+        return abort(
+          409,
+          "El resultado final no corresponde al tipo de ingreso de la llanta",
+        );
+      }
+    }
 
     const [operators] = await connection.query(
       "SELECT id_empleado FROM empleados WHERE id_empleado = ? AND estado = 'A'",

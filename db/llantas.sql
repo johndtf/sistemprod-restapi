@@ -9,6 +9,10 @@ CREATE TABLE `llantas` (
   `observacion` varchar(255) DEFAULT NULL,
   `consec_orden` int NOT NULL,
   `id_estado` int NOT NULL DEFAULT '0',
+  -- El tipo define la intencion al ingresar; el propietario puede cambiar al
+  -- comprar un casco, sin modificar la orden ni el cliente que lo entrego.
+  `tipo_ingreso` varchar(20) NOT NULL DEFAULT 'REENCAUCHE',
+  `id_propietario_actual` int unsigned DEFAULT NULL,
   `fecha_inspeccion_inicial` datetime DEFAULT NULL,
   `fecha_registro_inspinicial` datetime DEFAULT NULL,
   `id_inspector_inicial` mediumint unsigned DEFAULT NULL,
@@ -78,6 +82,7 @@ CREATE TABLE `llantas` (
   KEY `llantas_ibfk_3` (`id_dimension`),
   KEY `llantas_ibfk_4` (`id_banda`),
   KEY `fk_estado_llanta` (`id_estado`),
+  KEY `fk_propietario_actual` (`id_propietario_actual`),
   KEY `fk_inspector_inicial` (`id_inspector_inicial`),
   KEY `fk_operario_raspado` (`id_operario_raspado`),
   KEY `fk_resolucion_raspado` (`id_resolucion_raspado`),
@@ -102,6 +107,7 @@ CREATE TABLE `llantas` (
   KEY `fk_bodega_salida` (`id_bodega_salida`),
   KEY `fk_bodega_actual` (`id_bodega_actual`),
   CONSTRAINT `fk_estado_llanta` FOREIGN KEY (`id_estado`) REFERENCES `estados_llanta` (`id_estado`),
+  CONSTRAINT `fk_propietario_actual` FOREIGN KEY (`id_propietario_actual`) REFERENCES `clientes` (`id_cliente`),
   CONSTRAINT `fk_inspector_inicial` FOREIGN KEY (`id_inspector_inicial`) REFERENCES `empleados` (`id_empleado`),
   CONSTRAINT `fk_operario_raspado` FOREIGN KEY (`id_operario_raspado`) REFERENCES `empleados` (`id_empleado`),
   CONSTRAINT `fk_resolucion_raspado` FOREIGN KEY (`id_resolucion_raspado`) REFERENCES `resoluciones_i` (`id_inspec`),

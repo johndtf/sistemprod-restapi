@@ -186,7 +186,11 @@ export const getCustomer = async (req, res) => {
 export const getCompany = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      "SELECT d.id, d.eslogan, c.cedula_nit, c.nombre, c.apellido FROM data d JOIN clientes c ON d.id = c.id_cliente WHERE c.id_cliente = d.id"
+      `SELECT d.id_configuracion, d.id_cliente_propietario, d.eslogan, d.logo_ruta,
+              c.cedula_nit, c.nombre, c.apellido, c.telefono, c.email, c.direccion
+       FROM data d
+       JOIN clientes c ON d.id_cliente_propietario = c.id_cliente
+       WHERE d.id_configuracion = 1`
     );
 
     if (rows.length <= 0)
@@ -202,17 +206,36 @@ export const getCompany = async (req, res) => {
 
 export const updateData = async (req, res) => {
   try {
-    const { id, eslogan } = req.body;
+    const idCliente = Number(req.body.id_cliente_propietario);
+    const eslogan = typeof req.body.eslogan === "string" ? req.body.eslogan.trim() : "";
 
     // Verificar si el id y eslogan están presentes en el cuerpo de la solicitud
-    if (!id || !eslogan) {
+    if (!Number.isSafeInteger(idCliente) || idCliente <= 0 || !eslogan) {
       return res.status(400).json({
         message: "Se requiere el id y el eslogan para la actualización",
       });
     }
 
     // Realizar la actualización en la base de datos
-    await pool.query("UPDATE data SET eslogan = ? , id = ?", [eslogan, id]);
+    // El cliente conserva NIT, nombre y direccion; data solo guarda cual de
+    // ellos representa a la planta y los textos propios de reportes.
+    const [customers] = await pool.query(
+      "SELECT id_cliente FROM clientes WHERE id_cliente = ?",
+      [idCliente],
+    );
+    if (customers.length === 0) {
+      return res.status(404).json({ message: "El cliente propietario no existe" });
+    }
+
+    // El registro fijo 1 garantiza que solo exista una empresa propietaria.
+    await pool.query(
+      `INSERT INTO data (id_configuracion, id_cliente_propietario, eslogan)
+       VALUES (1, ?, ?)
+       ON DUPLICATE KEY UPDATE
+         id_cliente_propietario = VALUES(id_cliente_propietario),
+         eslogan = VALUES(eslogan)`,
+      [idCliente, eslogan],
+    );
 
     res.status(200).json({ message: "Registro actualizado exitosamente" });
   } catch (error) {

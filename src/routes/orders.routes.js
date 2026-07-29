@@ -3,6 +3,7 @@ import {
   getLastOrder,
   createOrder,
   getOrderByNumber,
+  getTireForOrder,
   addTireToOrder,
   updateTireInOrder,
   reassignMultipleTires,
@@ -20,6 +21,7 @@ const router = Router();
 router.get("/last", verifyPermission("ordenes"), getLastOrder);
 
 // Buscar orden por número (puede ampliarse a búsqueda avanzada)
+router.get("/tires/:idLlanta", verifyPermission("ordenes"), getTireForOrder);
 router.get("/:numeroOrden", verifyPermission("ordenes"), getOrderByNumber);
 
 // Crear una nueva orden
