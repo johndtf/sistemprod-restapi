@@ -111,6 +111,12 @@ export const getInventoryQuery = async (req, res) => {
   try {
     const [rows] = await pool.query(
       `SELECT ${getCustomerName} AS cliente,
+              /* El propietario actual puede cambiar cuando la empresa compra
+                 un casco; por eso no se toma directamente del cliente de orden. */
+              COALESCE(
+                NULLIF(TRIM(CONCAT(propietario.nombre, ' ', COALESCE(propietario.apellido, ''))), ''),
+                'Sin propietario asignado'
+              ) AS propietario,
               l.id_llanta AS tiquete,
               o.numero_orden,
               l.consec_orden,
@@ -120,6 +126,12 @@ export const getInventoryQuery = async (req, res) => {
               l.nivel_reenc,
               o.fecha AS fecha_ingreso,
               e.descripcion AS estado,
+              /* El tipo de ingreso explica el flujo esperado de la llanta:
+                 reencauche, reparacion o venta de casco. */
+              l.tipo_ingreso,
+              /* procesos es el historial. Se toma su fila mas reciente para
+                 indicar la etapa realmente registrada, incluso en reprocesos. */
+              COALESCE(sp.nombre, 'Sin proceso registrado') AS ultimo_subproceso,
               ri.resol_inspec AS resolucion_inspeccion,
               CASE l.ubicacion
                 WHEN 'P' THEN 'P - Planta'
@@ -133,10 +145,19 @@ export const getInventoryQuery = async (req, res) => {
        FROM llantas l
        JOIN ordenes o ON o.id_orden = l.id_orden
        JOIN clientes c ON c.id_cliente = o.id_cliente
+       LEFT JOIN clientes propietario ON propietario.id_cliente = l.id_propietario_actual
        JOIN estados_llanta e ON e.id_estado = l.id_estado
        LEFT JOIN marcas m ON m.id_marca = l.id_marca
        LEFT JOIN dimensiones d ON d.id_dimension = l.id_dimension
        LEFT JOIN bandas b ON b.id_banda = l.id_banda
+       LEFT JOIN procesos ultimo_proceso ON ultimo_proceso.id_proceso = (
+         SELECT historial.id_proceso
+         FROM procesos historial
+         WHERE historial.id_llanta = l.id_llanta
+         ORDER BY historial.fecha_registro DESC, historial.id_proceso DESC
+         LIMIT 1
+       )
+       LEFT JOIN subprocesos sp ON sp.id_subproceso = ultimo_proceso.id_subproceso
        LEFT JOIN resoluciones_i ri ON ri.id_inspec = l.id_inspec
        LEFT JOIN bodegas bo ON bo.id_bodega = l.id_bodega_actual
        LEFT JOIN compras_cascos_detalle cd ON cd.id_llanta = l.id_llanta

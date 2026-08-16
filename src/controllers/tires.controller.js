@@ -7,9 +7,15 @@ export const getTireByTicket = async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      `SELECT l.id_llanta,  l.serie,
+      `SELECT l.id_llanta,  l.serie, l.tipo_ingreso,
               l.observacion, l.prioridad, e.descripcion AS estado,
               l.nivel_reenc, l.observaciones_inicial, ri.resol_inspec,
+              /* El conteo viene de procesos, no de llantas: asi incluye cada
+                 ejecucion historica y permite advertir cuando habra reproceso. */
+              (SELECT COUNT(*)
+               FROM procesos pi
+               WHERE pi.id_llanta = l.id_llanta
+                 AND pi.id_subproceso = 1) AS inspecciones_iniciales_registradas,
               CONCAT(o.numero_orden, ' - ', LPAD(l.consec_orden, 2, '0')) AS orden,
               c.nombre AS cliente_nombre, c.apellido AS cliente_apellido,
               m.marca AS marca, d.dimension AS dimension, b.banda AS diseno,

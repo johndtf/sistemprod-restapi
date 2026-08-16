@@ -3,10 +3,12 @@ import { getCompletedSubprocessIds } from "../services/tireProcesses.service.js"
 
 // ==================== IDENTIFICADORES DEL NEGOCIO ====================
 // Vulcanizado ocupa la posicion 8 del flujo productivo. No captura datos
-// tecnicos propios: solo valida que exista Embandado aprobado y registra la
-// trazabilidad del operario, fecha, resolucion y posible rechazo.
+// tecnicos propios. Una llanta de Reencauche llega despues de Embandado, pero
+// una que ingreso solo para Reparacion puede llegar despues de su parche, sin
+// pasar por los subprocesos propios de la banda de rodamiento.
 const VULCANIZATION_SUBPROCESS_ID = 8;
 const BANDING_SUBPROCESS_ID = 7;
+const REPAIR_SUBPROCESS_ID = 4;
 const APT_STATE_ID = 1;
 const REJECTED_STATE_ID = 2;
 const APT_RESOLUTION_ID = 1;
@@ -28,11 +30,12 @@ const normalizeDateTime = (value) => {
 };
 
 // ==================== ELEGIBILIDAD ====================
-// La llanta debe seguir APTA y tener Embandado aprobado. Si Embandado rechazo
-// la llanta, el estado actual ya no sera APTA y esta validacion la bloquea.
+// La condicion previa depende del tipo de ingreso. Reencauche y Venta de casco
+// pasan por Embandado; Reparacion pasa directamente desde Reparacion aprobada.
+// En los tres casos la llanta debe seguir APTA para poder registrar el proceso.
 const validateEligibleTire = async (connection, ticket, lock = false) => {
   const [tires] = await connection.query(
-    `SELECT id_llanta, id_estado, nivel_reenc
+    `SELECT id_llanta, id_estado, nivel_reenc, tipo_ingreso
      FROM llantas
      WHERE id_llanta = ?${lock ? " FOR UPDATE" : ""}`,
     [ticket],
@@ -43,17 +46,32 @@ const validateEligibleTire = async (connection, ticket, lock = false) => {
     return { status: 409, message: "Solo las llantas APTAS pueden ingresar a Vulcanizado" };
   }
 
-  const [banding] = await connection.query(
-    `SELECT MAX(fecha_registro) AS fecha_registro_embandado
-     FROM procesos
-     WHERE id_llanta = ?
-       AND id_subproceso = ?
-       AND id_estado_resultado = ?`,
-    [ticket, BANDING_SUBPROCESS_ID, APT_STATE_ID],
-  );
+  if (tires[0].tipo_ingreso === "REPARACION") {
+    const [repair] = await connection.query(
+      `SELECT MAX(fecha_registro) AS fecha_registro_reparacion
+       FROM procesos
+       WHERE id_llanta = ?
+         AND id_subproceso = ?
+         AND id_estado_resultado = ?`,
+      [ticket, REPAIR_SUBPROCESS_ID, APT_STATE_ID],
+    );
 
-  if (!banding[0].fecha_registro_embandado) {
-    return { status: 409, message: "La llanta no tiene Embandado aprobado" };
+    if (!repair[0].fecha_registro_reparacion) {
+      return { status: 409, message: "La llanta no tiene Reparacion aprobada" };
+    }
+  } else {
+    const [banding] = await connection.query(
+      `SELECT MAX(fecha_registro) AS fecha_registro_embandado
+       FROM procesos
+       WHERE id_llanta = ?
+         AND id_subproceso = ?
+         AND id_estado_resultado = ?`,
+      [ticket, BANDING_SUBPROCESS_ID, APT_STATE_ID],
+    );
+
+    if (!banding[0].fecha_registro_embandado) {
+      return { status: 409, message: "La llanta no tiene Embandado aprobado" };
+    }
   }
 
   return { tire: tires[0] };
@@ -105,7 +123,7 @@ export const getVulcanizationTire = async (req, res) => {
     }
 
     const [rows] = await pool.query(
-      `SELECT l.id_llanta, l.serie, l.nivel_reenc,
+      `SELECT l.id_llanta, l.serie, l.nivel_reenc, l.tipo_ingreso,
               e.descripcion AS estado,
               CONCAT(o.numero_orden, ' - ', LPAD(l.consec_orden, 2, '0')) AS orden,
               TRIM(CONCAT(c.nombre, ' ', COALESCE(c.apellido, ''))) AS cliente,

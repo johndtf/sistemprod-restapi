@@ -33,6 +33,7 @@ import processedOutputsRoutes from "./routes/processedOutputs.routes.js";
 import warehousesRoutes from "./routes/warehouses.routes.js";
 import casingPurchasesRoutes from "./routes/casingPurchases.routes.js";
 import inventoryQueryRoutes from "./routes/inventoryQuery.routes.js";
+import tireCorrectionsRoutes from "./routes/tireCorrections.routes.js";
 
 const app = express();
 
@@ -81,6 +82,7 @@ app.use("/api/processed-outputs", processedOutputsRoutes);
 app.use("/api/warehouses", warehousesRoutes);
 app.use("/api/casing-purchases", casingPurchasesRoutes);
 app.use("/api/inventory-query", inventoryQueryRoutes);
+app.use("/api/tire-corrections", tireCorrectionsRoutes);
 
 // Middleware para rutas no encontradas
 app.use((req, res) => {
