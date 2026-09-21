@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getPlantParameters,
+  updateDefaultSalesTaxParameter,
   updateDryingTimeParameter,
   updateRetreadAverageCostParameter,
 } from "../controllers/plantParameters.controller.js";
@@ -13,5 +14,6 @@ const router = Router();
 router.get("/", verifyPermission("parametros"), getPlantParameters);
 router.patch("/drying-time", verifyPermission("parametros"), updateDryingTimeParameter);
 router.patch("/retread-average-cost", verifyPermission("parametros"), updateRetreadAverageCostParameter);
+router.patch("/default-sales-tax", verifyPermission("parametros"), updateDefaultSalesTaxParameter);
 
 export default router;

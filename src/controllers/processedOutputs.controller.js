@@ -229,6 +229,88 @@ export const listProcessedOutputBlock = async (req, res) => {
   }
 };
 
+// ==================== REPORTE DE PLANTA ====================
+// Lee un documento ya confirmado sin recalcular sus costos ni su destino. La
+// salida guarda esos datos en `llantas`, por lo que el reporte conserva la
+// evidencia de la entrega aun cuando luego se implemente el traslado entre
+// bodegas y cambie la ubicacion actual de alguna llanta.
+export const getProcessedOutputPlantReport = async (req, res) => {
+  const documentNumber = parsePositiveInteger(req.params.documento);
+  if (documentNumber === null) {
+    return res.status(400).json({ message: "Documento de salida invalido" });
+  }
+
+  try {
+    // Todas las llantas de un documento tienen la misma fecha, bodega,
+    // empleado y tipo porque se actualizan en una unica transaccion. Se toma
+    // una fila para formar el encabezado y las restantes se entregan abajo
+    // como detalle completo del documento.
+    const [[output]] = await pool.query(
+      `SELECT l.documento_salida,
+              l.fecha_salida,
+              l.tipo_salida,
+              b.codigo AS bodega_codigo,
+              b.nombre AS bodega_nombre,
+              empleado.nombre AS empleado_nombre,
+              empleado.apellido AS empleado_apellido,
+              empresa.nombre AS empresa_nombre,
+              empresa.apellido AS empresa_apellido,
+              data.eslogan AS empresa_eslogan
+       FROM llantas l
+       LEFT JOIN bodegas b ON b.id_bodega = l.id_bodega_salida
+       LEFT JOIN empleados empleado ON empleado.id_empleado = l.id_empleado_salida
+       LEFT JOIN data ON data.id_configuracion = 1
+       LEFT JOIN clientes empresa ON empresa.id_cliente = data.id_cliente_propietario
+       WHERE l.documento_salida = ?
+       ORDER BY l.id_llanta
+       LIMIT 1`,
+      [documentNumber],
+    );
+
+    if (!output) {
+      return res.status(404).json({ message: "Documento de salida no encontrado" });
+    }
+
+    const [details] = await pool.query(
+      `SELECT l.id_llanta,
+              CONCAT(o.numero_orden, ' - ', LPAD(l.consec_orden, 2, '0')) AS orden,
+              dimension.dimension,
+              banda.banda AS diseno,
+              marca.marca,
+              l.fecha_terminacion AS fecha_proceso,
+              /* El propietario actual puede ser distinto del cliente de la
+                 orden cuando la empresa compra un casco para su inventario. */
+              TRIM(CONCAT(propietario.nombre, ' ', COALESCE(propietario.apellido, ''))) AS propietario,
+              /* Si se aplico recosteo mensual se usa el costo real. Mientras
+                 tanto, Facturacion muestra el costo estimado de la salida. */
+              COALESCE(l.costo_real, l.costo_estimado, 0) AS costo_reencauche,
+              COALESCE(compra_detalle.valor_compra, 0) AS costo_casco,
+              CASE
+                WHEN l.id_propietario_actual = configuracion.id_cliente_propietario THEN 1
+                ELSE 0
+              END AS es_propiedad_empresa
+       FROM llantas l
+       JOIN ordenes o ON o.id_orden = l.id_orden
+       LEFT JOIN clientes propietario ON propietario.id_cliente = l.id_propietario_actual
+       LEFT JOIN marcas marca ON marca.id_marca = l.id_marca
+       LEFT JOIN dimensiones dimension ON dimension.id_dimension = l.id_dimension
+       LEFT JOIN bandas banda ON banda.id_banda = l.id_banda
+       LEFT JOIN compras_cascos_detalle compra_detalle ON compra_detalle.id_llanta = l.id_llanta
+       LEFT JOIN data configuracion ON configuracion.id_configuracion = 1
+       WHERE l.documento_salida = ?
+       /* La empresa queda primero; despues, ambos grupos se organizan para
+          facilitar la revision visual por la combinacion dimension y diseno. */
+       ORDER BY es_propiedad_empresa DESC, dimension.dimension, banda.banda, l.id_llanta`,
+      [documentNumber],
+    );
+
+    res.json({ salida: output, detalle: details });
+  } catch (error) {
+    console.error("Error en getProcessedOutputPlantReport:", error);
+    res.status(500).json({ message: "No se pudo cargar el reporte de salida" });
+  }
+};
+
 // ==================== ACTUALIZACION DE SALIDA ====================
 // La tabla visible es una preparacion del documento. Solo este endpoint cambia
 // ubicacion, documento, fechas y costos para todas las llantas seleccionadas.
