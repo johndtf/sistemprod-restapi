@@ -31,6 +31,7 @@ import terminationRoutes from "./routes/termination.routes.js";
 import treadWeightsRoutes from "./routes/treadWeights.routes.js";
 import processedOutputsRoutes from "./routes/processedOutputs.routes.js";
 import rejectedOutputsRoutes from "./routes/rejectedOutputs.routes.js";
+import rejectedDeliveriesRoutes from "./routes/rejectedDeliveries.routes.js";
 import tireSalesRoutes from "./routes/tireSales.routes.js";
 import warehousesRoutes from "./routes/warehouses.routes.js";
 import casingPurchasesRoutes from "./routes/casingPurchases.routes.js";
@@ -82,6 +83,7 @@ app.use("/api/tread-weights", treadWeightsRoutes);
 // conceder permiso para mover llantas fuera de planta.
 app.use("/api/processed-outputs", processedOutputsRoutes);
 app.use("/api/rejected-outputs", rejectedOutputsRoutes);
+app.use("/api/rejected-deliveries", rejectedDeliveriesRoutes);
 app.use("/api/tire-sales", tireSalesRoutes);
 app.use("/api/warehouses", warehousesRoutes);
 app.use("/api/casing-purchases", casingPurchasesRoutes);
