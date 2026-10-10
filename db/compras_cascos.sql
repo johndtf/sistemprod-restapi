@@ -9,20 +9,27 @@ CREATE TABLE `compras_cascos` (
   `id_compra` int unsigned NOT NULL AUTO_INCREMENT,
   `documento` mediumint unsigned NOT NULL,
   `fecha_compra` date NOT NULL,
+  -- PLANTA: compra despues de Inspeccion Inicial. BODEGA: compra posterior
+  -- al reencauche, sin cambiar el tipo de ingreso original de la llanta.
+  `origen_compra` varchar(20) NOT NULL DEFAULT 'PLANTA',
   `id_vendedor` int unsigned NOT NULL,
   `id_empresa_compradora` int unsigned NOT NULL,
   `id_empleado` mediumint unsigned NOT NULL,
+  `id_bodega` smallint unsigned DEFAULT NULL,
   PRIMARY KEY (`id_compra`),
   UNIQUE KEY `uq_compras_cascos_documento` (`documento`),
   KEY `fk_compra_vendedor` (`id_vendedor`),
   KEY `fk_compra_empresa` (`id_empresa_compradora`),
   KEY `fk_compra_empleado` (`id_empleado`),
+  KEY `fk_compra_bodega` (`id_bodega`),
   CONSTRAINT `fk_compra_vendedor`
     FOREIGN KEY (`id_vendedor`) REFERENCES `clientes` (`id_cliente`),
   CONSTRAINT `fk_compra_empresa`
     FOREIGN KEY (`id_empresa_compradora`) REFERENCES `clientes` (`id_cliente`),
   CONSTRAINT `fk_compra_empleado`
-    FOREIGN KEY (`id_empleado`) REFERENCES `empleados` (`id_empleado`)
+    FOREIGN KEY (`id_empleado`) REFERENCES `empleados` (`id_empleado`),
+  CONSTRAINT `fk_compra_bodega`
+    FOREIGN KEY (`id_bodega`) REFERENCES `bodegas` (`id_bodega`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 CREATE TABLE `compras_cascos_detalle` (
